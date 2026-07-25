@@ -83,6 +83,7 @@ const artworks = [
     alt: "Chibi Miku tries to fire magical beam",
     shortDescription: "A playful chibi interpretation of the magical-girl energy in 'M@GICAL☆CURE! LOVE ♥ SHOT!', \
     capturing the moment Miku interacting with audiencess by firing her 'Miku Miku Beam' at concert.",
+    hasProcess: true,
     processImages: [],
   },
   {
@@ -93,6 +94,7 @@ const artworks = [
     image: cinnamon,
     alt: "Cinnamon",
     shortDescription: "A cute Miku Chibi ",
+    hasProcess: true,
     processImages: [],
   },
   {
@@ -103,6 +105,7 @@ const artworks = [
     image: deepsea,
     alt: "Deepsea",
     shortDescription: "Placeholder description for Deepsea.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -115,6 +118,7 @@ const artworks = [
     shortDescription: "Inspired by n-buna's song 'Tale of a Frog' from his album 'Walking on the Moon'. While many songs on the record reinterpret existing fairy tales (e.g. Cinderella and The Tale of the Bamboo Cutter), “Tale of a Frog” is based on an original fairy tale written by n-buna himself. \
     The story follows a lonely frog with a flower growing on its head, feeling isolated for being different. However, during its journey, it meets friendly animals who admire and cherish the flower, gradually changing how the frog sees the relationship. between the flower and itself. The story explores this shift in self-perception, friendship makes the frog accpet and aprreciate its uniqueness. \
     My illustration captures the frog's fear and curiosity as it starts its journey, moving forward with a sense of wonder while still carrying hesitation, uncertainty and loneliness.",
+    hasProcess: true,
     processImages: [
       {
         id: "chibi-frog-process-1",
@@ -144,6 +148,7 @@ const artworks = [
     image: gmgm,
     alt: "Gmgm",
     shortDescription: "Placeholder description for Gmgm.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -154,6 +159,7 @@ const artworks = [
     image: guitar,
     alt: "Guitar",
     shortDescription: "Placeholder description for Guitar.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -166,6 +172,7 @@ const artworks = [
     shortDescription: "Inspired by a tour photograph of Billie Eilish performing 'Happier Than Ever' in her latest tour. The song explores the emotional aftermath of a toxic relationship, with a dramatic shift from melancholic acoustic sounds to an explosive rock climax. \
     My illustration tries to recreate that striking stage moment - where stage effects, her vocal delivery, guitar performance, and the immersive spatial sound created with her band work together to intensify the song's emotions stronger than the studio version. \
     Here the fire-like wings emphasise the anger, release and sense of liberation expressed at the climax of the performance.",
+    hasProcess: true,
     processImages: [
       {
         id: "chibi-hte-process-1",
@@ -195,6 +202,7 @@ const artworks = [
     image: luckyorb,
     alt: "Luckyorb",
     shortDescription: "Placeholder description for Luckyorb.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -205,6 +213,7 @@ const artworks = [
     image: mzk,
     alt: "Mzk",
     shortDescription: "Placeholder description for Mzk.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -215,6 +224,7 @@ const artworks = [
     image: pfp,
     alt: "Pfp",
     shortDescription: "Placeholder description for Pfp.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -225,6 +235,7 @@ const artworks = [
     image: szk,
     alt: "Szk",
     shortDescription: "Placeholder description for Szk.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -236,6 +247,7 @@ const artworks = [
     alt: "Ykhm",
     shortDescription: "Created before attending my first Hatsune Miku concert in Japan this year, this illustration imagines a  reunion between Miku from two different eras, 2013 and 2026, connected by her long-awaited return to the same venue 13 years later.\
     By bridging these two eras, I wanted to capture the feeling of returning to a place that holds shared memories for a community, evoking nostalgia and continuity. Time flies, but the emotions carried through music, and connections formed between people through a shared culture, can be long-lasting.",
+    hasProcess: true,
     processImages: [
       {
         id: "chibi-ykhm-process-1",
@@ -265,6 +277,7 @@ const artworks = [
     image: catui,
     alt: "Catui",
     shortDescription: "Placeholder description for Catui.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -275,6 +288,7 @@ const artworks = [
     image: checklist,
     alt: "Checklist",
     shortDescription: "Placeholder description for Checklist.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -285,6 +299,7 @@ const artworks = [
     image: food,
     alt: "Food",
     shortDescription: "Placeholder description for Food.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -295,6 +310,7 @@ const artworks = [
     image: hunters,
     alt: "Hunters",
     shortDescription: "Placeholder description for Hunters.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -305,6 +321,7 @@ const artworks = [
     image: logistics,
     alt: "Logistics",
     shortDescription: "Placeholder description for Logistics.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -317,6 +334,7 @@ const artworks = [
     shortDescription: "Created in memory of Hatsune Miku's first tour in Oceania in 2024 since debuted in 2007, which is also my first time seeing her live in Melbourne.\
     To match the colourful marine theme of her Oceania costume, I placed Miku among the rainbow bathing boxes of Mornington, blending her tour design with a familiar local landmarks. \
     I portrayed her looking back towards viewers to break the fourth wall and express the excitement of finally touring in Australia and celebrating this long-awaited moment with local fans.",
+    hasProcess: true,
     processImages: [
       {
         id: "illust-expo-process-1",
@@ -346,6 +364,7 @@ const artworks = [
     image: fressia,
     alt: "Fressia",
     shortDescription: "Placeholder description for Fressia.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -356,6 +375,7 @@ const artworks = [
     image: lll,
     alt: "Lll",
     shortDescription: "Placeholder description for Lll.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -368,6 +388,7 @@ const artworks = [
     shortDescription: "Inspired by PinocchioP's 'Because You're Here', theme song for event Magical Mirai 2020, with visuals inspired by traditional Japanese festivals. \
     The song expresses Miku's gratitude towards the fans who have supported her over years. As a symbol of subculture, she may never be loved or understood by everyone, but as long as there are people who continue to listen, create and cheer for her, she will always remain by her fans' side. \
     Using this Japanese festival (matsuri) inspired design, I imagined this moment as a celebration of gratitude between Miku and her community. Surrounded by fireworks and festival lights, the illustration captures the joy of getting together and celebrating connections that continues to grow through music, creativity and shared memories.",
+    hasProcess: true,
     processImages: [
       {
         id: "illust-matsuri-process-1",
@@ -397,6 +418,7 @@ const artworks = [
     image: mikurin,
     alt: "Mikurin",
     shortDescription: "Placeholder description for Mikurin.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -407,6 +429,7 @@ const artworks = [
     image: muse,
     alt: "Muse",
     shortDescription: "Placeholder description for Muse.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -419,6 +442,7 @@ const artworks = [
     shortDescription: "Inspired by the magician-themed design of Miku With You 2025 in Shanghai, this illustration commemorates my first Hatsune Miku concert in China.\
     To connect the event more closely with where it was held, I blended its visual identity with a recognisable local landmark. I imagined Miku as a playful yet stylish magician flying above the castle at Shanghai Disney Resort.\
     Through works like this, I enjoy bringing together event-specific character designs and imagery from the host city to create a stronger sense of connection and belonging for local fans.",
+    hasProcess: true,
     processImages: [
       {
         id: "illust-mwy-process-1",
@@ -448,6 +472,7 @@ const artworks = [
     image: puzzleGame0,
     alt: "0",
     shortDescription: "Placeholder description for 0.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -458,6 +483,7 @@ const artworks = [
     image: puzzleGame1,
     alt: "1",
     shortDescription: "Placeholder description for 1.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -468,6 +494,7 @@ const artworks = [
     image: puzzleGame2,
     alt: "2",
     shortDescription: "Placeholder description for 2.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -478,6 +505,7 @@ const artworks = [
     image: puzzleGame3,
     alt: "3",
     shortDescription: "Placeholder description for 3.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -488,6 +516,7 @@ const artworks = [
     image: puzzleGame4,
     alt: "4",
     shortDescription: "Placeholder description for 4.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -498,6 +527,7 @@ const artworks = [
     image: puzzleGame5,
     alt: "5",
     shortDescription: "Placeholder description for 5.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -508,6 +538,7 @@ const artworks = [
     image: puzzleGame6,
     alt: "6",
     shortDescription: "Placeholder description for 6.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -518,6 +549,7 @@ const artworks = [
     image: puzzleGame7,
     alt: "7",
     shortDescription: "Placeholder description for 7.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -528,6 +560,7 @@ const artworks = [
     image: puzzleGame8,
     alt: "8",
     shortDescription: "Placeholder description for 8.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -538,6 +571,7 @@ const artworks = [
     image: puzzleGame9,
     alt: "9",
     shortDescription: "Placeholder description for 9.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -550,6 +584,7 @@ const artworks = [
     shortDescription: "This artwork explores Hatsune Miku as a creative instrument shaped by the people who use her voice to express their own ideas, emotions and stories. I represented her as a puzzle gradually assembled from different pieces, suggesting that the Miku we know today has been collectively shaped by the works of many creators.\
     Each puzzle piece pays tribute to a different VOCALOID album featuring Miku, incorporating visual elements and stylistic references from each creator's work. As puzzle pieces come together, the composition reflects how individual creative voices contribute to a larger shared culture.\
     This is my proudest work so far, fulfilled with my appreciation to Miku, VOCALOID creators and the cultural group. Through the puzzle metaphor, I wanted to express how Miku's identity, cultural significance and emotional meaning are continually shaped by the people who create with her and connect through her.",
+    hasProcess: true,
     processImages: [
       {
         id: "illust-puzzle-process-1",
@@ -579,6 +614,7 @@ const artworks = [
     image: setsuna,
     alt: "Setsuna",
     shortDescription: "Placeholder description for Setsuna.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -592,6 +628,7 @@ const artworks = [
     In their story, these two aspiring stage performers are connected by a childhood promise to stand together at 'Position Zero' - play the leading roles in 'Starlight' together at stage centre. \
     After years of separation, competition and shared experiences, that promise becomes more than random things mentioned in passing, it shapes who they are and how they move through life, both on and beyond the stage. \
     I represented this promise through the ribbons wrapped around their hands, symbolising a bond that has become part of their identities and continues to connect them as they move forward together.",
+    hasProcess: true,
     processImages: [
       {
         id: "illust-starlight-process-1",
@@ -621,6 +658,7 @@ const artworks = [
     image: um,
     alt: "Um",
     shortDescription: "Placeholder description for Um.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -631,6 +669,7 @@ const artworks = [
     image: xmas,
     alt: "Xmas",
     shortDescription: "Placeholder description for Xmas.",
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -643,6 +682,7 @@ const artworks = [
     shortDescription: "This print explores Hatsune Miku as a hybrid being, combining organic anatomy and mechanical systems. I developed the idea by showing her holding her X-ray image revealing split of her internal structure, half robot and half human. \
     During development, I tried different ways to show this contrast more clearly, experimenting with how to divide the body and choosing appropriate elements for both sides, such as DNA and skeletons for the human side, and wires and chips for the robot side, to create balance and symmetry in between. \
     A key challenge was translating my detailed digital sketch into printmaking. It was difficult to control line direction when drawing on the very smooth and slippery copper plate, so I used variations in line strength to represent depth and structure, simplifying some details and allowing etching itself to affect the final outcome.",
+    hasProcess: true,
     processImages: [
       {
         id: "printmaking-antonomy-process-1",
@@ -671,9 +711,10 @@ const artworks = [
     project: "Fossil",
     image: fossil,
     alt: "Fossil",
-    shortDescription: "This linocut explores the idea of recording and preserving traces over time. I connected elements can be represented as spiral forms - fossils, engrave on vinyl records and star trails, as different ways that time, sound and movement can leave visible marks. Hatsune Miku sits at the centre as a virtual voice preserved by traces on the physical medium.\
+    description: "This linocut explores the idea of recording and preserving traces over time. I connected elements can be represented as spiral forms - fossils, engrave on vinyl records and star trails, as different ways that time, sound and movement can leave visible marks. Hatsune Miku sits at the centre as a virtual voice preserved by traces on the physical medium.\
     During development, I focused on combining these references into one composition. I used repeated curves and spirals to transform Miku's hair into shapes resembling fossil shells and vinyl grooves, creating a continuous flow between organic, musical and digital elements.\
     As my first linocut, a key challenge was carving curves and spirals smoothly while staying true to my original intention. Although the result is somewhat rough compared to the digital sketch, simplifying the design allowed me to successfully maintain a clear contrast between positive and negative space.",
+    hasProcess: true,
     processImages: [
       {
         id: "printmaking-fossil-process-1",
@@ -705,6 +746,7 @@ const artworks = [
     shortDescription: "This drypoint reimagines Hatsune Miku through 'The Fool' tarot card, exploring a half-human, half-machine encountering the natural world for the first time. I chose 'The Fool' because its themes of curiosity and new beginnings reflect Miku moving beyond a familar artificial environment (lab) into unfamiliar one (nature).\
     During development, I adapted traditional symbols from The Fool, including the cliff, flower and landscape, while using Miku's pose and flowing lines to strengthen the connection between the figure and environment. I aimed to show both curiosity and uncertainty as she moves towards a new experience.\
     A key challenge was working with drypoint on a smooth plastic plate. Reworking areas created doubled, less controlled lines, so I learned to make marks more clearly and confidently from the start. These imperfections also made the final print feel more physically expressive.",
+    hasProcess: true,
     processImages: [
        {
         id: "printmaking-tarot-process-1",
