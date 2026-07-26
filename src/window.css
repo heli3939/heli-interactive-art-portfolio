@@ -7,6 +7,8 @@
     inset 1px 1px 0 #dbdbdb,
     inset -2px -2px 0 #808080,
     inset 2px 2px 0 #fff;
+}
+
 .window-frame__title-bar {
   position: absolute;
   z-index: 2;
@@ -15,6 +17,8 @@
   left: 2px;
   height: 18px;
   background: linear-gradient(to left, #a32cda, #3c77e3);
+}
+
 .window-frame__title {
   position: absolute;
   top: -7px;
@@ -34,6 +38,8 @@
 
 .window-frame__button {
   position: relative;
+  display: grid;
+  place-items: center;
   width: 16px;
   height: 14px;
   border: 1px solid #000;
@@ -42,26 +48,24 @@
     inset 1px 1px 0 #fff,
     inset -2px -2px 0 #808080,
     inset 2px 2px 0 #dbdbdb;
+}
+
 .window-frame__button img {
-  position: absolute;
   display: block;
   max-width: none;
 }
 
 .window-frame__button--close img {
-  top: 3px;
-  left: 4px;
   width: 8px;
   height: 7px;
+}
+
 .window-frame__button:not(.window-frame__button--close) img {
-  top: 2px;
-  left: 3px;
   width: 9px;
   height: 9px;
+}
+
 .window-frame__button--minimize::after {
-  position: absolute;
-  top: 8px;
-  left: 3px;
   width: 6px;
   height: 2px;
   background: #000;
