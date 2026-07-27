@@ -83,7 +83,7 @@ const artworks = [
     alt: "Chibi Miku tries to fire magical beam",
     description: "A playful chibi interpretation of the magical-girl energy in 'M@GICAL☆CURE! LOVE ♥ SHOT!', \
     capturing the moment Miku interacting with audiencess by firing her 'Miku Miku Beam' at concert.",
-    hasProcess: true,
+    hasProcess: false,
     processImages: [],
   },
   {
@@ -94,7 +94,7 @@ const artworks = [
     image: cinnamon,
     alt: "Cinnamon",
     description: "A cute Miku Chibi ",
-    hasProcess: true,
+    hasProcess: false,
     processImages: [],
   },
   {

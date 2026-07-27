@@ -21,7 +21,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
 
         <nav className="site-header__nav" aria-label="Primary navigation">
           <a href="/#gallery">Gallery Entrance</a>
-          <a href="/#process">Creating Process</a>
+          <a href="/creating-process">Creating Process</a>
           <a href="/#puzzle">Puzzle Room</a>
         </nav>
 
@@ -58,7 +58,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
             </p>
             <nav id="detail-mobile-navigation" aria-label="Mobile navigation">
               <a href="/#gallery">Gallery Entrance</a>
-              <a href="/#process">Creating Process</a>
+              <a href="/creating-process">Creating Process</a>
               <a href="/#puzzle">Puzzle Room</a>
             </nav>
           </aside>
@@ -73,13 +73,13 @@ function ProcessGallery({ artwork }) {
 
   return (
     <div className="detail-process">
-      <span
+      <a
         className="detail-process__toggle"
-        role="img"
-        aria-label="Creating process page coming later"
+        href={`/creating-process?artwork=${encodeURIComponent(artwork.id)}`}
+        aria-label={`Project the creating process for ${artwork.title}`}
       >
         <img src={projector} alt="" />
-      </span>
+      </a>
     </div>
   );
 }

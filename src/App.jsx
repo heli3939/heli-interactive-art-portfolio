@@ -142,7 +142,7 @@ function App() {
 
         <nav className="site-header__nav" aria-label="Primary navigation">
           <a href="#gallery">Gallery Entrance</a>
-          <a href="#process">Creating Process</a>
+          <a href="/creating-process">Creating Process</a>
           <a href="#puzzle">Puzzle Room</a>
         </nav>
 
@@ -181,7 +181,7 @@ function App() {
               <a href="#gallery" onClick={() => setIsMenuOpen(false)}>
                 Gallery Entrance
               </a>
-              <a href="#process" onClick={() => setIsMenuOpen(false)}>
+              <a href="/creating-process" onClick={() => setIsMenuOpen(false)}>
                 Creating Process
               </a>
               <a href="#puzzle" onClick={() => setIsMenuOpen(false)}>
