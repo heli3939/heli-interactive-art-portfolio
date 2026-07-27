@@ -38,7 +38,7 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
             <p className="mobile-nav__heading">Navigation</p>
             <nav>
               <a href="/#gallery">Gallery Entrance</a>
-              <a href="/creating-process" onClick={onMenuClose}>Creating Process</a>
+              <a href="/creating-process" aria-current="page" onClick={onMenuClose}>Creating Process</a>
               <a href="/#puzzle">Puzzle Room</a>
             </nav>
           </aside>
@@ -56,6 +56,7 @@ function CreatingProcessPage() {
   );
   const [stageIndex, setStageIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLeavingPage, setIsLeavingPage] = useState(false);
   const selectedArtwork = processArtworks.find((artwork) => artwork.id === selectedId);
   const stages = selectedArtwork
     ? [...selectedArtwork.processImages, {
@@ -73,6 +74,30 @@ function CreatingProcessPage() {
     return () => window.clearInterval(timer);
   }, [selectedArtwork, stages.length]);
 
+  useEffect(() => {
+    let navigationTimer;
+    let navigating = false;
+
+    const returnToGallery = (event) => {
+      if (event.deltaY >= 0 || window.scrollY > 1 || navigating || isMenuOpen) return;
+
+      event.preventDefault();
+      navigating = true;
+      setIsLeavingPage(true);
+      navigationTimer = window.setTimeout(() => {
+        window.sessionStorage.setItem("gallery-entry", "from-process");
+        window.location.assign("/#gallery");
+      }, 650);
+    };
+
+    window.addEventListener("wheel", returnToGallery, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", returnToGallery);
+      if (navigationTimer !== undefined) window.clearTimeout(navigationTimer);
+    };
+  }, [isMenuOpen]);
+
   const selectArtwork = (artwork) => {
     setStageIndex(0);
     setSelectedId(artwork.id);
@@ -80,15 +105,16 @@ function CreatingProcessPage() {
   };
 
   return (
-    <div className="process-page" style={{ "--process-background": `url(${background})` }}>
+    <div
+      className={`process-page${isLeavingPage ? " process-page--leaving" : ""}`}
+      style={{ "--process-background": `url(${background})` }}
+    >
       <ProcessHeader
         isMenuOpen={isMenuOpen}
         onMenuToggle={() => setIsMenuOpen((open) => !open)}
         onMenuClose={() => setIsMenuOpen(false)}
       />
       <main className="process-layout" inert={isMenuOpen ? true : undefined}>
-        <a className="process-back" href="/" aria-label="Go back"><span aria-hidden="true">&gt;</span></a>
-
         <section className="process-selector" aria-label="Artworks with creating processes">
           <img
             className="process-projector"

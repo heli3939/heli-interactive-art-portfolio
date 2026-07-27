@@ -113,7 +113,7 @@ function ContactLinks({ mobile = false }) {
   );
 }
 
-function FloatingGallery({ disabled = false }) {
+function FloatingGallery({ disabled = false, entryMode = "default" }) {
   const galleryRef = useRef(null);
 
   useEffect(() => {
@@ -122,9 +122,23 @@ function FloatingGallery({ disabled = false }) {
 
     const cards = [...gallery.querySelectorAll(".artwork-card-flight")];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let progress = 0;
-    let animationFrame;
+    const minimumProgress = 0.16;
     const stagger = 0.68;
+    const enteredFromProcess = entryMode === "from-process";
+    const savedProgress = Number.parseFloat(
+      window.sessionStorage.getItem("gallery-progress") || "",
+    );
+    const shouldRestoreProgress = entryMode === "restore-progress"
+      && Number.isFinite(savedProgress);
+    const startingProgress = shouldRestoreProgress
+      ? Math.min(1 + (cards.length - 1) * stagger, Math.max(minimumProgress, savedProgress))
+      : enteredFromProcess
+        ? (cards.length - 1) * stagger + 0.91
+        : minimumProgress;
+    let progress = startingProgress;
+    let animationFrame;
+    let navigationTimer;
+    let isNavigating = false;
     const maximumProgress = 1 + (cards.length - 1) * stagger;
 
     const renderDepth = () => {
@@ -141,7 +155,10 @@ function FloatingGallery({ disabled = false }) {
           1,
           Math.max(0, progress - index * stagger),
         );
-        const zPosition = -1100 + cardProgress * 1620;
+        const isInstruction = card.classList.contains("gallery-instruction");
+        const zPosition = isInstruction
+          ? -220 + cardProgress * 220
+          : -1100 + cardProgress * 1620;
         const fadeIn = Math.min(1, cardProgress / 0.16);
         const fadeOut = Math.min(1, (1 - cardProgress) / 0.09);
         const opacity = Math.max(0, Math.min(fadeIn, fadeOut));
@@ -161,48 +178,123 @@ function FloatingGallery({ disabled = false }) {
       if (disabled || reducedMotion) return;
 
       const bounds = gallery.getBoundingClientRect();
-      const isPinned = bounds.top <= 1 && bounds.bottom >= window.innerHeight - 1;
+      const headerHeight = document.querySelector(".site-header--home")?.offsetHeight ?? 0;
+      const isPinned = bounds.top <= headerHeight + 1
+        && bounds.bottom >= window.innerHeight - 1;
       if (!isPinned) return;
 
       const movingForward = event.deltaY > 0;
       const canMoveForward = progress < maximumProgress;
-      const canMoveBackward = progress > 0;
+      const canMoveBackward = progress > minimumProgress;
+
+      if (!movingForward && !canMoveBackward) {
+        event.preventDefault();
+        if (!isNavigating) {
+          isNavigating = true;
+          gallery.classList.add("gallery--leaving", "gallery--leaving-back");
+          navigationTimer = window.setTimeout(() => {
+            window.location.assign("/");
+          }, 650);
+        }
+        return;
+      }
+
+      if (enteredFromProcess && movingForward) {
+        event.preventDefault();
+        if (!isNavigating) {
+          isNavigating = true;
+          gallery.classList.add("gallery--leaving");
+          navigationTimer = window.setTimeout(() => {
+            window.location.assign("/creating-process");
+          }, 650);
+        }
+        return;
+      }
+
+      if (movingForward && !canMoveForward) {
+        event.preventDefault();
+        if (!isNavigating) {
+          isNavigating = true;
+          gallery.classList.add("gallery--leaving");
+          navigationTimer = window.setTimeout(() => {
+            window.location.assign("/creating-process");
+          }, 650);
+        }
+        return;
+      }
 
       if ((movingForward && canMoveForward) || (!movingForward && canMoveBackward)) {
         event.preventDefault();
         progress = Math.min(
           maximumProgress,
-          Math.max(0, progress + event.deltaY * 0.0009),
+          Math.max(minimumProgress, progress + event.deltaY * 0.0009),
         );
         requestRender();
       }
     };
 
+    const resetGallery = () => {
+      progress = minimumProgress;
+      requestRender();
+    };
+
+    const savePositionBeforeOpeningArtwork = (event) => {
+      if (!event.target.closest("a.artwork-card")) return;
+
+      window.sessionStorage.setItem("gallery-entry", "restore-progress");
+      window.sessionStorage.setItem("gallery-progress", String(progress));
+    };
+
+    const resetWhenLeavingGallery = () => {
+      const bounds = gallery.getBoundingClientRect();
+      const headerHeight = document.querySelector(".site-header--home")?.offsetHeight ?? 0;
+
+      if (bounds.top > headerHeight + 1 && progress !== minimumProgress) {
+        resetGallery();
+      }
+    };
+
     renderDepth();
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("scroll", resetWhenLeavingGallery, { passive: true });
+    window.addEventListener("gallery:reset", resetGallery);
+    gallery.addEventListener("click", savePositionBeforeOpeningArtwork);
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("scroll", resetWhenLeavingGallery);
+      window.removeEventListener("gallery:reset", resetGallery);
+      gallery.removeEventListener("click", savePositionBeforeOpeningArtwork);
       if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame);
+      if (navigationTimer !== undefined) window.clearTimeout(navigationTimer);
     };
-  }, [disabled]);
+  }, [disabled, entryMode]);
 
   return (
     <section
       className="gallery"
       id="gallery"
-      aria-labelledby="gallery-heading"
+      aria-label="Artwork gallery"
       inert={disabled ? true : undefined}
       ref={galleryRef}
     >
-      <div className="gallery__intro">
-        <p className="gallery__eyebrow">Floating collection</p>
-        <h2 className="pixel-heading gallery__heading" id="gallery-heading">
-          Gallery
-        </h2>
-        <p className="gallery__hint">Scroll to bring the artworks forward.</p>
-      </div>
       <div className="gallery__space">
+        <div
+          className="artwork-card-flight gallery-instruction"
+          style={{
+            "--card-x": "50%",
+            "--card-y": "52%",
+            "--card-width": "25rem",
+            zIndex: 30,
+          }}
+        >
+          <WindowFrame title="*Hint*" className="gallery-instruction__window">
+            <p>
+              Scroll to explore the gallery. Click an artwork to
+              view its details.
+            </p>
+          </WindowFrame>
+        </div>
         {galleryArtworks.map((artwork, index) => (
           <ArtworkCard artwork={artwork} index={index} key={artwork.id} />
         ))}
@@ -213,6 +305,53 @@ function FloatingGallery({ disabled = false }) {
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [galleryEntryMode, setGalleryEntryMode] = useState(
+    () => window.sessionStorage.getItem("gallery-entry") || "default",
+  );
+  const [currentPage, setCurrentPage] = useState(
+    window.location.hash === "#gallery" ? "gallery" : "about",
+  );
+
+  useEffect(() => {
+    const updatePageFromHash = () => {
+      const nextPage = window.location.hash === "#gallery" ? "gallery" : "about";
+
+      if (nextPage === "gallery") {
+        setGalleryEntryMode("default");
+        window.sessionStorage.removeItem("gallery-entry");
+        window.sessionStorage.removeItem("gallery-progress");
+      }
+
+      setCurrentPage(nextPage);
+      window.scrollTo(0, 0);
+    };
+
+    window.addEventListener("hashchange", updatePageFromHash);
+    return () => window.removeEventListener("hashchange", updatePageFromHash);
+  }, []);
+
+  useEffect(() => {
+    if (currentPage === "gallery") {
+      window.sessionStorage.removeItem("gallery-entry");
+    }
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (currentPage !== "about") return undefined;
+
+    const openGalleryOnScroll = (event) => {
+      const atPageBottom = window.scrollY + window.innerHeight
+        >= document.documentElement.scrollHeight - 2;
+
+      if (event.deltaY > 0 && atPageBottom && !isMenuOpen) {
+        event.preventDefault();
+        window.location.hash = "gallery";
+      }
+    };
+
+    window.addEventListener("wheel", openGalleryOnScroll, { passive: false });
+    return () => window.removeEventListener("wheel", openGalleryOnScroll);
+  }, [currentPage, isMenuOpen]);
 
   useEffect(() => {
     if (!isMenuOpen) return undefined;
@@ -232,7 +371,7 @@ function App() {
 
   return (
     <div className="about-page" style={{ "--page-background": `url(${background})` }}>
-      <header className="site-header">
+      <header className="site-header site-header--home">
         <a
           className="site-header__logo"
           href="#"
@@ -243,7 +382,13 @@ function App() {
         </a>
 
         <nav className="site-header__nav" aria-label="Primary navigation">
-          <a href="#gallery">Gallery Entrance</a>
+          <a
+            href="#gallery"
+            aria-current={currentPage === "gallery" ? "page" : undefined}
+            onClick={() => window.dispatchEvent(new Event("gallery:reset"))}
+          >
+            Gallery Entrance
+          </a>
           <a href="/creating-process">Creating Process</a>
           <a href="#puzzle">Puzzle Room</a>
         </nav>
@@ -280,7 +425,14 @@ function App() {
               Navigation
             </p>
             <nav id="mobile-navigation" aria-label="Mobile navigation">
-              <a href="#gallery" onClick={() => setIsMenuOpen(false)}>
+              <a
+                href="#gallery"
+                aria-current={currentPage === "gallery" ? "page" : undefined}
+                onClick={() => {
+                  window.dispatchEvent(new Event("gallery:reset"));
+                  setIsMenuOpen(false);
+                }}
+              >
                 Gallery Entrance
               </a>
               <a href="/creating-process" onClick={() => setIsMenuOpen(false)}>
@@ -294,7 +446,8 @@ function App() {
         </>
       )}
 
-      <main className="about-layout" inert={isMenuOpen ? true : undefined}>
+      {currentPage === "about" ? (
+        <main className="about-layout" inert={isMenuOpen ? true : undefined}>
         <div className="profile-column">
           <img className="profile-portrait" src={portrait} alt="Pixel illustration of Heli" />
 
@@ -314,9 +467,13 @@ function App() {
           </h2>
           <ContactLinks mobile />
         </section>
-      </main>
-
-      <FloatingGallery disabled={isMenuOpen} />
+        </main>
+      ) : (
+        <FloatingGallery
+          disabled={isMenuOpen}
+          entryMode={galleryEntryMode}
+        />
+      )}
     </div>
   );
 }

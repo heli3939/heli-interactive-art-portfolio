@@ -23,7 +23,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         </a>
 
         <nav className="site-header__nav" aria-label="Primary navigation">
-          <a href="/#gallery">Gallery Entrance</a>
+          <a href="/#gallery" aria-current="page">Gallery Entrance</a>
           <a href="/creating-process">Creating Process</a>
           <a href="/#puzzle">Puzzle Room</a>
         </nav>
@@ -60,7 +60,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
               Navigation
             </p>
             <nav id="detail-mobile-navigation" aria-label="Mobile navigation">
-              <a href="/#gallery">Gallery Entrance</a>
+              <a href="/#gallery" aria-current="page">Gallery Entrance</a>
               <a href="/creating-process">Creating Process</a>
               <a href="/#puzzle">Puzzle Room</a>
             </nav>
@@ -203,7 +203,7 @@ function ArtworkDetailPage({ artworkId }) {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      window.location.assign("/");
+      window.location.assign("/#gallery");
     }
   };
 

@@ -53,9 +53,9 @@ function ArtworkCard({ artwork, index = 0 }) {
               <div className="artwork-card__image-placeholder">Image coming soon</div>
             )}
           </div>
-        </div>
-        <div className="artwork-card__title-area">
-          <h3 className="artwork-card__title">{artwork.title || "Untitled"}</h3>
+          <div className="artwork-card__title-area">
+            <p className="artwork-card__title">{artwork.title || "Untitled"}</p>
+          </div>
         </div>
       </CardElement>
     </div>
