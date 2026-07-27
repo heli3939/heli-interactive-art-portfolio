@@ -3,7 +3,10 @@ import WindowFrame from "./components/WindowFrame";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
-import projector from "./assets/icons/projector_button.png";
+import projectorOff from "./assets/icons/projector_button_off.png";
+import projectorOn from "./assets/icons/projector_button_on.png";
+import standingProjectorOff from "./assets/icons/projector_off.png";
+import standingProjectorOn from "./assets/icons/projector_on.png";
 import "./ArtworkDetailPage.css";
 
 function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
@@ -68,25 +71,84 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
   );
 }
 
-function ProcessGallery({ artwork }) {
+function ProcessToggle({ artwork, isOn, onToggle }) {
   if (!artwork.hasProcess) return null;
 
   return (
     <div className="detail-process">
-      <a
+      <button
         className="detail-process__toggle"
-        href={`/creating-process?artwork=${encodeURIComponent(artwork.id)}`}
-        aria-label={`Project the creating process for ${artwork.title}`}
+        type="button"
+        aria-label={`${isOn ? "Turn off" : "Turn on"} the creating process projector for ${artwork.title}`}
+        aria-pressed={isOn}
+        onClick={onToggle}
       >
-        <img src={projector} alt="" />
-      </a>
+        <img
+          className="detail-process__icon"
+          src={isOn ? projectorOn : projectorOff}
+          alt=""
+        />
+      </button>
     </div>
+  );
+}
+
+function DetailProcessViewer({ artwork, stageIndex, onStageChange }) {
+  const stages = [
+    ...artwork.processImages,
+    {
+      id: `${artwork.id}-final`,
+      image: artwork.image,
+      alt: `${artwork.title} final artwork`,
+    },
+  ];
+
+  return (
+    <section className="detail-process-viewer" aria-label={`Creating process for ${artwork.title}`} aria-live="polite">
+      <div className="detail-process-viewer__stage">
+        <img
+          className="detail-process-viewer__main"
+          src={stages[stageIndex].image}
+          alt={stages[stageIndex].alt}
+        />
+      </div>
+      <div className="detail-process-thumbnails">
+        {stages.map((stage, index) => (
+          <button
+            className={index === stageIndex ? "is-active" : ""}
+            type="button"
+            key={stage.id}
+            onClick={() => onStageChange(index)}
+            aria-label={`View stage ${index + 1} of ${artwork.title}`}
+            aria-current={index === stageIndex ? "step" : undefined}
+          >
+            <img src={stage.image} alt="" />
+          </button>
+        ))}
+      </div>
+      <div className="detail-process-progress" aria-label={`Stage ${stageIndex + 1} of ${stages.length}`}>
+        {stages.map((stage, index) => (
+          <button
+            type="button"
+            key={stage.id}
+            className={index === stageIndex ? "is-active" : ""}
+            onClick={() => onStageChange(index)}
+            aria-label={`Go to stage ${index + 1}`}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
 
 function ArtworkDetailPage({ artworkId }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [projectorPhase, setProjectorPhase] = useState("off");
+  const [stageIndex, setStageIndex] = useState(0);
   const artwork = artworks.find((item) => item.id === artworkId && item.hasProcess);
+  const stageCount = artwork ? artwork.processImages.length + 1 : 0;
+  const isProjectorOn = projectorPhase === "on";
+  const isProjectorActive = projectorPhase !== "off";
 
   useEffect(() => {
     if (!isMenuOpen) return undefined;
@@ -104,6 +166,26 @@ function ArtworkDetailPage({ artworkId }) {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    if (projectorPhase !== "inserting") return undefined;
+
+    const timer = window.setTimeout(() => {
+      setProjectorPhase("on");
+    }, 720);
+
+    return () => window.clearTimeout(timer);
+  }, [projectorPhase]);
+
+  useEffect(() => {
+    if (!isProjectorOn || stageCount < 2) return undefined;
+
+    const timer = window.setInterval(() => {
+      setStageIndex((index) => (index + 1) % stageCount);
+    }, 3200);
+
+    return () => window.clearInterval(timer);
+  }, [isProjectorOn, stageCount]);
 
   if (!artwork) {
     return (
@@ -146,21 +228,57 @@ function ArtworkDetailPage({ artworkId }) {
           <span aria-hidden="true">&gt;</span>
         </button>
 
-        <section className="detail-artwork" aria-labelledby="detail-artwork-title">
-          <img
-            className="detail-artwork__image"
-            src={artwork.image}
-            alt={artwork.alt || artwork.title}
-          />
+        <section
+          className={`detail-artwork${isProjectorActive ? " detail-artwork--projecting" : ""}`}
+          aria-labelledby="detail-artwork-title"
+        >
+          {isProjectorActive ? (
+            <div className="detail-standing-projector" aria-hidden="true">
+              <img
+                className="detail-standing-projector__image"
+                src={isProjectorOn ? standingProjectorOn : standingProjectorOff}
+                alt=""
+              />
+              {projectorPhase === "inserting" && (
+                <div className="detail-standing-projector__artwork">
+                  <img src={artwork.image} alt="" />
+                </div>
+              )}
+            </div>
+          ) : (
+            <img
+              className="detail-artwork__image"
+              src={artwork.image}
+              alt={artwork.alt || artwork.title}
+            />
+          )}
           <h1 className="detail-artwork__title" id="detail-artwork-title">
             {artwork.title}
           </h1>
-          <ProcessGallery artwork={artwork} />
+          <ProcessToggle
+            artwork={artwork}
+            isOn={isProjectorOn}
+            onToggle={() => {
+              setStageIndex(0);
+              setProjectorPhase((phase) => {
+                if (phase !== "off") return "off";
+                return window.matchMedia("(max-width: 1024px)").matches ? "on" : "inserting";
+              });
+            }}
+          />
         </section>
 
-        <WindowFrame title="Description" className="detail-description">
-          <p>{description}</p>
-        </WindowFrame>
+        {isProjectorOn ? (
+          <DetailProcessViewer
+            artwork={artwork}
+            stageIndex={stageIndex}
+            onStageChange={setStageIndex}
+          />
+        ) : projectorPhase === "off" ? (
+          <WindowFrame title="Description" className="detail-description">
+            <p>{description}</p>
+          </WindowFrame>
+        ) : <div className="detail-process-pending" aria-label="Artwork is entering the projector" />}
       </main>
     </div>
   );

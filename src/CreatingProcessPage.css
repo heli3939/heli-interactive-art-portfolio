@@ -65,8 +65,8 @@
   padding: 10px 14px;
   overflow: hidden;
   border: 2px solid rgb(99 59 255 / 55%);
-  background: rgb(167 186 255 / 25%);
-  box-shadow: 0 4px 8px rgb(64 39 155 / 28%);
+  background: rgb(106 138 255 / 80%);
+  box-shadow: 0 5px 5px rgb(0 0 0 / 24%);
 }
 
 .process-card {
@@ -75,11 +75,11 @@
   display: block;
   width: min(88px, 92%);
   height: auto;
-  padding: 5px;
-  border: 1px solid #fff;
-  background: #76f1ff;
+  padding: 7px;
+  border: 0;
+  background: #9f85ff;
   background-blend-mode: color-burn;
-  box-shadow: 0 4px 6px rgb(0 0 0 / 28%);
+  box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
   cursor: pointer;
   transform: rotate(var(--rotation));
   transition: transform 180ms ease, border-color 180ms ease, z-index 0s;
@@ -104,6 +104,7 @@
 .process-card--selected {
   z-index: 90;
   border: 3px solid #ffef45;
+  padding: 4px;
   transform: rotate(0deg);
 }
 
@@ -155,14 +156,14 @@
   height: 116px;
   padding: 12px 7px;
   border: 2px solid transparent;
-  background: #76f1ffc1;
+  background: #9f85ff;
   background-blend-mode: color-burn;
+  filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
   cursor: pointer;
 }
 
 .process-thumbnails button.is-active {
-  border-color: #6d45ff;
-  background: #76f1ff;
+  border-color: #ffef45;
 }
 
 .process-thumbnails img {
