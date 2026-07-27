@@ -1,5 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import WindowFrame from "./components/WindowFrame";
+import ArtworkCard from "./components/ArtworkCard";
+import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import portrait from "./assets/artworks/chibi/pfp/pfp_1000px.jpg";
 import logo from "./assets/icons/logo.png";
@@ -28,6 +30,8 @@ const contacts = [
     icon: gmailIcon,
   },
 ];
+
+const galleryArtworks = artworks.filter((artwork) => artwork.hasProcess);
 
 function AboutCopy() {
   const copyRef = useRef(null);
@@ -106,6 +110,104 @@ function ContactLinks({ mobile = false }) {
         </a>
       ))}
     </div>
+  );
+}
+
+function FloatingGallery({ disabled = false }) {
+  const galleryRef = useRef(null);
+
+  useEffect(() => {
+    const gallery = galleryRef.current;
+    if (!gallery) return undefined;
+
+    const cards = [...gallery.querySelectorAll(".artwork-card-flight")];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let progress = 0;
+    let animationFrame;
+    const stagger = 0.68;
+    const maximumProgress = 1 + (cards.length - 1) * stagger;
+
+    const renderDepth = () => {
+      animationFrame = undefined;
+
+      cards.forEach((card, index) => {
+        if (reducedMotion) {
+          card.style.setProperty("--scroll-z", "0px");
+          card.style.setProperty("--scroll-opacity", "1");
+          return;
+        }
+
+        const cardProgress = Math.min(
+          1,
+          Math.max(0, progress - index * stagger),
+        );
+        const zPosition = -1100 + cardProgress * 1620;
+        const fadeIn = Math.min(1, cardProgress / 0.16);
+        const fadeOut = Math.min(1, (1 - cardProgress) / 0.09);
+        const opacity = Math.max(0, Math.min(fadeIn, fadeOut));
+
+        card.style.setProperty("--scroll-z", `${zPosition}px`);
+        card.style.setProperty("--scroll-opacity", opacity.toFixed(3));
+        card.style.pointerEvents = opacity < 0.08 ? "none" : "";
+      });
+    };
+
+    const requestRender = () => {
+      if (animationFrame !== undefined) return;
+      animationFrame = window.requestAnimationFrame(renderDepth);
+    };
+
+    const handleWheel = (event) => {
+      if (disabled || reducedMotion) return;
+
+      const bounds = gallery.getBoundingClientRect();
+      const isPinned = bounds.top <= 1 && bounds.bottom >= window.innerHeight - 1;
+      if (!isPinned) return;
+
+      const movingForward = event.deltaY > 0;
+      const canMoveForward = progress < maximumProgress;
+      const canMoveBackward = progress > 0;
+
+      if ((movingForward && canMoveForward) || (!movingForward && canMoveBackward)) {
+        event.preventDefault();
+        progress = Math.min(
+          maximumProgress,
+          Math.max(0, progress + event.deltaY * 0.0009),
+        );
+        requestRender();
+      }
+    };
+
+    renderDepth();
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame);
+    };
+  }, [disabled]);
+
+  return (
+    <section
+      className="gallery"
+      id="gallery"
+      aria-labelledby="gallery-heading"
+      inert={disabled ? true : undefined}
+      ref={galleryRef}
+    >
+      <div className="gallery__intro">
+        <p className="gallery__eyebrow">Floating collection</p>
+        <h2 className="pixel-heading gallery__heading" id="gallery-heading">
+          Gallery
+        </h2>
+        <p className="gallery__hint">Scroll to bring the artworks forward.</p>
+      </div>
+      <div className="gallery__space">
+        {galleryArtworks.map((artwork, index) => (
+          <ArtworkCard artwork={artwork} index={index} key={artwork.id} />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -213,6 +315,8 @@ function App() {
           <ContactLinks mobile />
         </section>
       </main>
+
+      <FloatingGallery disabled={isMenuOpen} />
     </div>
   );
 }
