@@ -502,7 +502,8 @@ a.artwork-card:focus-visible .artwork-card__frame {
   }
 
   .site-header__menu {
-    position: absolute;
+    position: fixed;
+    z-index: 91;
     top: 13px;
     right: 15px;
     display: grid;
@@ -525,7 +526,7 @@ a.artwork-card:focus-visible .artwork-card__frame {
   }
 
   .site-header__menu[aria-expanded="true"] {
-    z-index: 101;
+    display: none;
   }
 
   .site-header__menu[aria-expanded="true"] span:first-child {
@@ -552,17 +553,25 @@ a.artwork-card:focus-visible .artwork-card__frame {
     border: 2px solid #411cff;
     border-right: 0;
     border-radius: 28px 0 0 28px;
+    background: transparent;
+    box-shadow: -10px 0 24px rgb(38 13 111 / 45%);
+  }
+
+  .mobile-nav::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
     background: linear-gradient(
       180deg,
       rgba(146, 139, 242, 0.699),
       rgba(36, 135, 255, 0.637)
     );
-    box-shadow: -10px 0 24px rgb(38 13 111 / 45%);
+    content: "";
   }
 
   .mobile-nav-backdrop {
     position: fixed;
-    z-index: 99;
+    z-index: 80;
     inset: 0;
     display: block;
     width: 100%;
@@ -574,6 +583,8 @@ a.artwork-card:focus-visible .artwork-card__frame {
   }
 
   .mobile-nav nav {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     gap: 34px;
@@ -581,6 +592,8 @@ a.artwork-card:focus-visible .artwork-card__frame {
   }
 
   .mobile-nav__heading {
+    position: relative;
+    z-index: 2;
     margin: 76px 18px 0;
     padding-bottom: 12px;
     color: #b8fffb;
@@ -623,7 +636,6 @@ a.artwork-card:focus-visible .artwork-card__frame {
   .mobile-nav a[aria-current="page"]:hover,
   .mobile-nav a[aria-current="page"]:focus-visible {
     color: #fffd78;
-    filter: drop-shadow(0 0 6px rgb(255 253 120 / 90%));
     transform: none;
   }
 

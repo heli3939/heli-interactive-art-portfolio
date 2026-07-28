@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import WindowFrame from "./components/WindowFrame";
+import ImageLightbox from "./components/ImageLightbox";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
 import projectorOff from "./assets/icons/projector_off.png";
 import projectorOn from "./assets/icons/projector_on.png";
+import projectorMobileOff from "./assets/icons/projector_mobile_off.png";
+import projectorMobileOn from "./assets/icons/projector_mobile_on.png";
 import "./CreatingProcessPage.css";
 
 const rotations = [-6, 4, -2, 5, 1, -7, 8, -3, -1, 4, -2, 5];
@@ -17,7 +20,7 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
           <img src={logo} alt="Heli" />
         </a>
         <nav className="site-header__nav" aria-label="Primary navigation">
-          <a href="/#gallery">Gallery Entrance</a>
+          <a href="/#gallery">Artwork Collection</a>
           <a href="/creating-process" aria-current="page">Creating Process</a>
           <a href="/#puzzle">Puzzle Room</a>
         </nav>
@@ -37,7 +40,7 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
           <aside className="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation">
             <p className="mobile-nav__heading">Navigation</p>
             <nav>
-              <a href="/#gallery">Gallery Entrance</a>
+              <a href="/#gallery">Artwork Collection</a>
               <a href="/creating-process" aria-current="page" onClick={onMenuClose}>Creating Process</a>
               <a href="/#puzzle">Puzzle Room</a>
             </nav>
@@ -55,6 +58,8 @@ function CreatingProcessPage() {
     processArtworks.some((artwork) => artwork.id === initialId) ? initialId : null,
   );
   const [stageIndex, setStageIndex] = useState(0);
+  const [isProcessPaused, setIsProcessPaused] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLeavingPage, setIsLeavingPage] = useState(false);
   const selectedArtwork = processArtworks.find((artwork) => artwork.id === selectedId);
@@ -67,12 +72,12 @@ function CreatingProcessPage() {
     : [];
 
   useEffect(() => {
-    if (!selectedArtwork || stages.length < 2) return undefined;
+    if (!selectedArtwork || stages.length < 2 || isProcessPaused) return undefined;
     const timer = window.setInterval(() => {
       setStageIndex((index) => (index + 1) % stages.length);
     }, 3200);
     return () => window.clearInterval(timer);
-  }, [selectedArtwork, stages.length]);
+  }, [selectedArtwork, stages.length, isProcessPaused]);
 
   useEffect(() => {
     let navigationTimer;
@@ -133,6 +138,7 @@ function CreatingProcessPage() {
                   aria-label={`Show the creating process for ${artwork.title}`}
                   style={{
                     "--rotation": `${selected ? 0 : rotations[index % rotations.length]}deg`,
+                    "--mobile-rotation": `${selected ? 0 : rotations[index % rotations.length] * 0.45}deg`,
                     "--card-index": index,
                   }}
                   onClick={() => selectArtwork(artwork)}
@@ -147,7 +153,23 @@ function CreatingProcessPage() {
         <section className={`process-viewer${selectedArtwork ? " process-viewer--active" : ""}`} aria-live="polite">
           {selectedArtwork ? (
             <>
-              <img className="process-viewer__main" src={stages[stageIndex].image} alt={stages[stageIndex].alt} />
+              <img
+                className="process-viewer__main"
+                src={stages[stageIndex].image}
+                alt={stages[stageIndex].alt}
+                tabIndex="0"
+                onMouseEnter={() => setIsProcessPaused(true)}
+                onMouseLeave={() => setIsProcessPaused(false)}
+                onFocus={() => setIsProcessPaused(true)}
+                onBlur={() => setIsProcessPaused(false)}
+                onClick={() => setLightboxImage(stages[stageIndex])}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setLightboxImage(stages[stageIndex]);
+                  }
+                }}
+              />
               <div className="process-thumbnails">
                 {stages.map((stage, index) => (
                   <button
@@ -180,7 +202,21 @@ function CreatingProcessPage() {
             </WindowFrame>
           )}
         </section>
+        <div
+          className={`process-mobile-projector${selectedArtwork ? " process-mobile-projector--on" : ""}`}
+          key={selectedArtwork ? "projector-on" : "projector-off"}
+        >
+          <img
+            src={selectedArtwork ? projectorMobileOn : projectorMobileOff}
+            alt={selectedArtwork ? "Projector on" : "Projector off"}
+          />
+        </div>
       </main>
+      <ImageLightbox
+        image={lightboxImage?.image}
+        alt={lightboxImage?.alt}
+        onClose={() => setLightboxImage(null)}
+      />
     </div>
   );
 }

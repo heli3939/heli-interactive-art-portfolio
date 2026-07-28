@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import WindowFrame from "./components/WindowFrame";
+import ImageLightbox from "./components/ImageLightbox";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
@@ -7,6 +8,7 @@ import projectorOff from "./assets/icons/projector_button_off.png";
 import projectorOn from "./assets/icons/projector_button_on.png";
 import standingProjectorOff from "./assets/icons/projector_off.png";
 import standingProjectorOn from "./assets/icons/projector_on.png";
+import mobileProjectorOn from "./assets/icons/projector_mobile_on.png";
 import "./ArtworkDetailPage.css";
 
 function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
@@ -23,7 +25,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         </a>
 
         <nav className="site-header__nav" aria-label="Primary navigation">
-          <a href="/#gallery">Gallery Entrance</a>
+          <a href="/#gallery">Artwork Collection</a>
           <a href="/creating-process">Creating Process</a>
           <a href="/#puzzle">Puzzle Room</a>
         </nav>
@@ -60,7 +62,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
               Navigation
             </p>
             <nav id="detail-mobile-navigation" aria-label="Mobile navigation">
-              <a href="/#gallery">Gallery Entrance</a>
+              <a href="/#gallery">Artwork Collection</a>
               <a href="/creating-process">Creating Process</a>
               <a href="/#puzzle">Puzzle Room</a>
             </nav>
@@ -93,7 +95,13 @@ function ProcessToggle({ artwork, isOn, onToggle }) {
   );
 }
 
-function DetailProcessViewer({ artwork, stageIndex, onStageChange }) {
+function DetailProcessViewer({
+  artwork,
+  stageIndex,
+  onStageChange,
+  onPauseChange,
+  onImageOpen,
+}) {
   const stages = [
     ...artwork.processImages,
     {
@@ -110,6 +118,18 @@ function DetailProcessViewer({ artwork, stageIndex, onStageChange }) {
           className="detail-process-viewer__main"
           src={stages[stageIndex].image}
           alt={stages[stageIndex].alt}
+          tabIndex="0"
+          onMouseEnter={() => onPauseChange(true)}
+          onMouseLeave={() => onPauseChange(false)}
+          onFocus={() => onPauseChange(true)}
+          onBlur={() => onPauseChange(false)}
+          onClick={() => onImageOpen(stages[stageIndex])}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onImageOpen(stages[stageIndex]);
+            }
+          }}
         />
       </div>
       <div className="detail-process-thumbnails">
@@ -137,6 +157,9 @@ function DetailProcessViewer({ artwork, stageIndex, onStageChange }) {
           />
         ))}
       </div>
+      <div className="detail-mobile-projector" aria-hidden="true">
+        <img src={mobileProjectorOn} alt="" />
+      </div>
     </section>
   );
 }
@@ -145,6 +168,8 @@ function ArtworkDetailPage({ artworkId }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [projectorPhase, setProjectorPhase] = useState("off");
   const [stageIndex, setStageIndex] = useState(0);
+  const [isProcessPaused, setIsProcessPaused] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState(null);
   const artwork = artworks.find((item) => item.id === artworkId);
   const stageCount = artwork?.hasProcess ? artwork.processImages.length + 1 : 0;
   const isProjectorOn = projectorPhase === "on";
@@ -178,14 +203,14 @@ function ArtworkDetailPage({ artworkId }) {
   }, [projectorPhase]);
 
   useEffect(() => {
-    if (!isProjectorOn || stageCount < 2) return undefined;
+    if (!isProjectorOn || stageCount < 2 || isProcessPaused) return undefined;
 
     const timer = window.setInterval(() => {
       setStageIndex((index) => (index + 1) % stageCount);
     }, 3200);
 
     return () => window.clearInterval(timer);
-  }, [isProjectorOn, stageCount]);
+  }, [isProjectorOn, stageCount, isProcessPaused]);
 
   if (!artwork) {
     return (
@@ -250,6 +275,20 @@ function ArtworkDetailPage({ artworkId }) {
               className="detail-artwork__image"
               src={artwork.image}
               alt={artwork.alt || artwork.title}
+              tabIndex="0"
+              onClick={() => setLightboxImage({
+                image: artwork.image,
+                alt: artwork.alt || artwork.title,
+              })}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setLightboxImage({
+                    image: artwork.image,
+                    alt: artwork.alt || artwork.title,
+                  });
+                }
+              }}
             />
           )}
           <h1 className="detail-artwork__title" id="detail-artwork-title">
@@ -273,6 +312,8 @@ function ArtworkDetailPage({ artworkId }) {
             artwork={artwork}
             stageIndex={stageIndex}
             onStageChange={setStageIndex}
+            onPauseChange={setIsProcessPaused}
+            onImageOpen={setLightboxImage}
           />
         ) : projectorPhase === "off" ? (
           <WindowFrame title="Description" className="detail-description">
@@ -280,6 +321,11 @@ function ArtworkDetailPage({ artworkId }) {
           </WindowFrame>
         ) : <div className="detail-process-pending" aria-label="Artwork is entering the projector" />}
       </main>
+      <ImageLightbox
+        image={lightboxImage?.image}
+        alt={lightboxImage?.alt}
+        onClose={() => setLightboxImage(null)}
+      />
     </div>
   );
 }

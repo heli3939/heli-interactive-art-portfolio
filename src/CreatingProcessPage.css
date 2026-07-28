@@ -43,6 +43,10 @@
   .process-layout {
     animation-duration: 0.01ms;
   }
+
+  .process-mobile-projector {
+    animation-duration: 0.01ms;
+  }
 }
 
 .process-selector {
@@ -55,6 +59,20 @@
   aspect-ratio: 1;
   object-fit: contain;
   filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
+}
+
+.process-mobile-projector {
+  display: none;
+}
+
+@keyframes process-mobile-projector-switch {
+  from {
+    transform: translateY(18px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 .process-stack {
@@ -183,6 +201,15 @@
   margin: 0 auto;
   background: rgb(255 255 255 / 76%);
   box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+  cursor: zoom-in;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.process-viewer__main:hover,
+.process-viewer__main:focus-visible {
+  outline: none;
+  box-shadow: 0 9px 16px rgb(0 0 0 / 32%);
+  transform: scale(1.06);
 }
 
 .process-thumbnails {
@@ -249,37 +276,54 @@
 @media (max-width: 1024px) {
   .process-layout {
     display: flex;
-    flex-direction: column-reverse;
-    gap: 46px;
+    flex-direction: column;
+    gap: 6px;
     width: min(960px, calc(100% - 24px));
-    padding: 64px 0 28px;
+    padding: 12px 0;
   }
 
   .process-selector {
-    display: grid;
-    grid-template-columns: 84px minmax(0, 1fr);
-    align-items: center;
-    gap: 12px;
+    display: block;
+    order: 3;
+    width: min(100%, 640px);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .process-projector {
+    display: none;
   }
 
   .process-stack {
-    height: 157px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    height: clamp(100px, 16svh, 140px);
     margin: 0;
-    padding: 7px 10px;
+    padding: 5px 10px;
   }
 
   .process-card {
-    width: min(62px, 92%);
+    width: min(80px, 108%);
     height: auto;
     padding: 3px;
+    transform: rotate(var(--mobile-rotation));
+  }
+
+  .process-card:hover,
+  .process-card:focus-visible {
+    transform: rotate(var(--mobile-rotation)) translateY(-2px) scale(1.025);
   }
 
   .process-viewer {
+    order: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    width: min(100%, 640px);
     min-height: 0;
+    margin-right: auto;
+    margin-left: auto;
     padding: 0;
   }
 
@@ -287,7 +331,7 @@
     width: auto;
     max-width: 100%;
     height: auto;
-    max-height: min(61vw, 398px);
+    max-height: min(60vw, 35svh);
   }
 
   .process-thumbnails,
@@ -297,31 +341,103 @@
     margin-left: auto;
   }
 
+  .process-progress {
+    margin-top: 8px;
+  }
+
   .process-thumbnails button {
-    height: clamp(72px, 18vw, 116px);
-    padding: 7px 4px;
+    height: clamp(58px, 12svh, 90px);
+    padding: 4px;
   }
 
   .process-viewer__prompt-window {
-    margin-top: 100px;
+    height: 110px;
+    margin-top: 6px;
+  }
+
+  .process-mobile-projector {
+    order: 2;
+    display: block;
+    width: min(320px, 50%, 30svh);
+    aspect-ratio: 1.93;
+    margin: 0 auto 8px;
+    overflow: hidden;
+    filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
+  }
+
+  .process-mobile-projector--on {
+    animation: process-mobile-projector-switch 380ms ease-out both;
+  }
+
+  .process-mobile-projector img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transform: translateY(-21.6%);
   }
 }
 
 @media (max-width: 600px) {
   .process-layout {
     width: calc(100% - 12px);
+    gap: 4px;
+    padding: 8px 0 10px;
   }
 
   .process-viewer__main {
-    max-height: 66vw;
+    max-height: min(58vw, 34svh);
   }
 
   .process-thumbnails {
     gap: 2px;
+    margin-top: 2px;
   }
 
   .process-thumbnails button {
+    height: clamp(54px, 10.5svh, 78px);
+    padding-top: 3px;
+    padding-bottom: 3px;
     padding-right: 2px;
     padding-left: 2px;
+  }
+
+  .process-progress {
+    margin-top: 7px;
+  }
+
+  .process-progress::before {
+    top: 6px;
+  }
+
+  .process-progress button {
+    width: 14px;
+    height: 14px;
+  }
+
+  .process-mobile-projector {
+    margin: 0 auto;
+  }
+
+  .process-stack {
+    height: clamp(88px, 14svh, 112px);
+    padding: 4px 8px;
+  }
+
+  .process-card {
+    width: min(52px, 105%);
+    padding: 2px;
+  }
+
+  .process-card--printmaking {
+    top: 3px;
+  }
+
+  .process-viewer__prompt-window {
+    height: 105px;
+    margin-top: 4px;
+  }
+
+  .process-viewer__prompt {
+    font-size: 22px;
   }
 }

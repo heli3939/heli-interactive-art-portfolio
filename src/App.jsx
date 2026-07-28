@@ -278,7 +278,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         >
           <WindowFrame title="*Hint*" className="gallery-instruction__window">
             <p>
-              Scroll to explore the gallery. Click an artwork to
+              Scroll to explore the my artworks. Click an artwork to
               view its details.
             </p>
           </WindowFrame>
@@ -375,25 +375,25 @@ function App() {
             aria-current={currentPage === "gallery" ? "page" : undefined}
             onClick={() => window.dispatchEvent(new Event("gallery:reset"))}
           >
-            Gallery Entrance
+            Artwork Collection
           </a>
           <a href="/creating-process">Creating Process</a>
           <a href="#puzzle">Puzzle Room</a>
         </nav>
 
-        <button
-          className="site-header__menu"
-          type="button"
-          aria-label={isMenuOpen ? "Close navigation" : "Open navigation"}
-          aria-controls="mobile-navigation"
-          aria-expanded={isMenuOpen}
-          onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
       </header>
+      <button
+        className="site-header__menu site-header__menu--home"
+        type="button"
+        aria-label={isMenuOpen ? "Close navigation" : "Open navigation"}
+        aria-controls="mobile-navigation"
+        aria-expanded={isMenuOpen}
+        onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
 
       {isMenuOpen && (
         <>
