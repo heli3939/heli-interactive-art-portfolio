@@ -23,7 +23,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         </a>
 
         <nav className="site-header__nav" aria-label="Primary navigation">
-          <a href="/#gallery" aria-current="page">Gallery Entrance</a>
+          <a href="/#gallery">Gallery Entrance</a>
           <a href="/creating-process">Creating Process</a>
           <a href="/#puzzle">Puzzle Room</a>
         </nav>
@@ -60,7 +60,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
               Navigation
             </p>
             <nav id="detail-mobile-navigation" aria-label="Mobile navigation">
-              <a href="/#gallery" aria-current="page">Gallery Entrance</a>
+              <a href="/#gallery">Gallery Entrance</a>
               <a href="/creating-process">Creating Process</a>
               <a href="/#puzzle">Puzzle Room</a>
             </nav>
@@ -145,8 +145,8 @@ function ArtworkDetailPage({ artworkId }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [projectorPhase, setProjectorPhase] = useState("off");
   const [stageIndex, setStageIndex] = useState(0);
-  const artwork = artworks.find((item) => item.id === artworkId && item.hasProcess);
-  const stageCount = artwork ? artwork.processImages.length + 1 : 0;
+  const artwork = artworks.find((item) => item.id === artworkId);
+  const stageCount = artwork?.hasProcess ? artwork.processImages.length + 1 : 0;
   const isProjectorOn = projectorPhase === "on";
   const isProjectorActive = projectorPhase !== "off";
 

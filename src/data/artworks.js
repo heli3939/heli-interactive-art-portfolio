@@ -110,7 +110,7 @@ const artworks = [
   },
   {
     id: "chibi-frog",
-    title: "Frog",
+    title: "Tale of a Frog, 2025",
     category: "Chibi",
     project: "Frog",
     image: frog,
@@ -164,7 +164,7 @@ const artworks = [
   },
   {
     id: "chibi-hte",
-    title: "Hte",
+    title: "Happier Than Ever, 2024",
     category: "Chibi",
     project: "Hte",
     image: hte,
@@ -240,7 +240,7 @@ const artworks = [
   },
   {
     id: "chibi-ykhm",
-    title: "Ykhm",
+    title: "Reunion, 2026",
     category: "Chibi",
     project: "Ykhm",
     image: ykhm,
@@ -326,7 +326,7 @@ const artworks = [
   },
   {
     id: "illust-expo",
-    title: "Expo",
+    title: "Oceanic Blue, 2024",
     category: "Illust",
     project: "Expo",
     image: expo,
@@ -380,7 +380,7 @@ const artworks = [
   },
   {
     id: "illust-matsuri",
-    title: "Matsuri",
+    title: "Matsuri, 2026",
     category: "Illust",
     project: "Matsuri",
     image: matsuri,
@@ -434,7 +434,7 @@ const artworks = [
   },
   {
     id: "illust-mwy",
-    title: "Mwy",
+    title: "Magician at Winterland, 2025",
     category: "Illust",
     project: "Mwy",
     image: mwy,
@@ -576,7 +576,7 @@ const artworks = [
   },
   {
     id: "illust-puzzle",
-    title: "Puzzle",
+    title: "The Puzzle, 2025",
     category: "Illust",
     project: "Puzzle",
     image: puzzle,
@@ -619,7 +619,7 @@ const artworks = [
   },
   {
     id: "illust-starlight",
-    title: "Starlight",
+    title: "Our Starlight, 2026",
     category: "Illust",
     project: "Starlight",
     image: starlight,
@@ -674,7 +674,7 @@ const artworks = [
   },
   {
     id: "printmaking-antonomy",
-    title: "Antonomy",
+    title: "What's inside?, 2026",
     category: "Printmaking",
     project: "Antonomy",
     image: antonomy,
@@ -706,7 +706,7 @@ const artworks = [
   },
   {
     id: "printmaking-fossil",
-    title: "Fossil",
+    title: "Time Spirals, 2026",
     category: "Printmaking",
     project: "Fossil",
     image: fossil,
@@ -738,7 +738,7 @@ const artworks = [
   },
   {
     id: "printmaking-tarot",
-    title: "Tarot",
+    title: "The Fool, 2026",
     category: "Printmaking",
     project: "Tarot",
     image: tarot,
@@ -746,7 +746,7 @@ const artworks = [
     description: "This drypoint reimagines Hatsune Miku through 'The Fool' tarot card, exploring a half-human, half-machine encountering the natural world for the first time. I chose 'The Fool' because its themes of curiosity and new beginnings reflect Miku moving beyond a familar artificial environment (lab) into unfamiliar one (nature).\
     During development, I adapted traditional symbols from The Fool, including the cliff, flower and landscape, while using Miku's pose and flowing lines to strengthen the connection between the figure and environment. I aimed to show both curiosity and uncertainty as she moves towards a new experience.\
     A key challenge was working with drypoint on a smooth plastic plate. Reworking areas created doubled, less controlled lines, so I learned to make marks more clearly and confidently from the start. These imperfections also made the final print feel more physically expressive.",
-    hasProcess: true,
+    hasProcess: false,
     processImages: [
        {
         id: "printmaking-tarot-process-1",

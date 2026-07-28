@@ -199,18 +199,6 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         return;
       }
 
-      if (enteredFromProcess && movingForward) {
-        event.preventDefault();
-        if (!isNavigating) {
-          isNavigating = true;
-          gallery.classList.add("gallery--leaving");
-          navigationTimer = window.setTimeout(() => {
-            window.location.assign("/creating-process");
-          }, 650);
-        }
-        return;
-      }
-
       if (movingForward && !canMoveForward) {
         event.preventDefault();
         if (!isNavigating) {

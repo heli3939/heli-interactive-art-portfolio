@@ -7,7 +7,7 @@ import projectorOff from "./assets/icons/projector_off.png";
 import projectorOn from "./assets/icons/projector_on.png";
 import "./CreatingProcessPage.css";
 
-const rotations = [-3, 2, -2, 3, 2, -3, 3, -2, -2, 2, -3, 3];
+const rotations = [-6, 4, -2, 5, 1, -7, 8, -3, -1, 4, -2, 5];
 
 function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
   return (
