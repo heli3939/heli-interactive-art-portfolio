@@ -581,10 +581,10 @@ const artworks = [
     project: "Puzzle",
     image: puzzle,
     alt: "Puzzle",
-    description: "This artwork explores Hatsune Miku as a creative instrument shaped by the people who use her voice to express their own ideas, emotions and stories. I represented her as a puzzle gradually assembled from different pieces, suggesting that the Miku we know today has been collectively shaped by the works of many creators.\
-    Each puzzle piece pays tribute to a different VOCALOID album featuring Miku, incorporating visual elements and stylistic references from each creator's work. As puzzle pieces come together, the composition reflects how individual creative voices contribute to a larger shared culture.\
-    This is my proudest work so far, fulfilled with my appreciation to Miku, VOCALOID creators and the cultural group. Through the puzzle metaphor, I wanted to express how Miku's identity, cultural significance and emotional meaning are continually shaped by the people who create with her and connect through her.",
-    hasProcess: true,
+    description: "This artwork explores Hatsune Miku as a creative instrument shaped by the people who use her voice to express their ideas, emotions, and stories. I depicted her as a puzzle made of different pieces, suggesting that the Miku we know today is collectively formed by many creators. \
+Each piece references a VOCALOID album featuring Miku, reflecting the visual style and identity of each work.Together, they show how individual voices merge into a shared culture.\
+    For Miku herself, I drew inspiration from THE FIRST TAKE, a Japanese YouTube music channel known for its minimalist studio setting and one- take live performances that capture raw, unedited emotion.Her headphones and recording setup place her in a similar studio environment, and her pose reflects the moment just after finishing a recording, carrying a sense of release and quiet satisfaction as she turns toward the producers and creators behind the music.\
+  This is my proudest work so far, filled with my appreciation for Miku, VOCALOID creators, and the community.Through the puzzle metaphor, I wanted to express how Miku's identity, cultural significance, and emotional meaning are continually shaped by the people who create with her and connect through her.",    hasProcess: true,
     processImages: [
       {
         id: "illust-puzzle-process-1",

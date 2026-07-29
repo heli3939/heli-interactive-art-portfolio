@@ -50,6 +50,17 @@
     inset 2px 2px 0 #dbdbdb;
 }
 
+button.window-frame__button {
+  padding: 0;
+  cursor: pointer;
+}
+
+button.window-frame__button:focus-visible {
+  z-index: 1;
+  outline: 2px solid #ffef45;
+  outline-offset: 1px;
+}
+
 .window-frame__button img {
   display: block;
   max-width: none;

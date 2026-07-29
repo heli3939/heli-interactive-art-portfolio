@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import artworks from "./data/artworks";
+import puzzleReferences from "./data/puzzleReferences";
+import WindowFrame from "./components/WindowFrame";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
 import "./PuzzleRoom.css";
@@ -84,10 +86,84 @@ function makePieces(isMobile, layoutOrder) {
   });
 }
 
+function ReferencePiece({ piece, reference, active, dimmed, onToggle }) {
+  const row = Math.floor((reference.id - 1) / 3);
+  const column = (reference.id - 1) % 3;
+
+  return (
+    <button
+      className={[
+        "reference-piece",
+        active ? "is-active" : "",
+        dimmed ? "is-dimmed" : "",
+      ].join(" ")}
+      type="button"
+      aria-label={`${active ? "Close" : "Open"} reference ${reference.id}: ${reference.albumTitle}`}
+      aria-pressed={active}
+      onClick={(event) => {
+        event.stopPropagation();
+        onToggle(reference.id);
+      }}
+      style={{
+        "--reference-row": row,
+        "--reference-column": column,
+        "--reference-shape": `url("${piece.image}")`,
+      }}
+    >
+      <img className="reference-piece__art" src={piece.image} alt="" draggable={false} />
+    </button>
+  );
+}
+
+function ReferenceAnnotation({ reference, onClose }) {
+  const row = Math.floor((reference.id - 1) / 3);
+  const column = (reference.id - 1) % 3;
+
+  return (
+    <WindowFrame
+      className={`reference-note reference-note--${reference.position}`}
+      title={`REFERENCE ${String(reference.id).padStart(2, "0")}`}
+      onClose={onClose}
+      onClick={(event) => event.stopPropagation()}
+      style={{
+        "--reference-row": row,
+        "--reference-column": column,
+      }}
+    >
+      <span className="reference-note__line" aria-hidden="true" />
+      <div className="reference-note__body">
+        <a
+          className="reference-note__cover-link"
+          href={reference.musicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Listen to ${reference.albumTitle} on YouTube Music`}
+        >
+          <img
+            src={reference.albumCover}
+            alt={`${reference.albumTitle} album cover`}
+            draggable={false}
+            referrerPolicy="no-referrer"
+          />
+          <span>♪ Listen ↗</span>
+        </a>
+        <div className="reference-note__copy">
+          <h2>{reference.albumTitle}</h2>
+          <p className="reference-note__credit">
+            {reference.artist}{reference.year ? ` · ${reference.year}` : ""}
+          </p>
+          <p className="reference-note__description">{reference.description}</p>
+        </div>
+      </div>
+    </WindowFrame>
+  );
+}
+
 function PuzzleRoom() {
   const roomRef = useRef(null);
   const boardRef = useRef(null);
   const dragRef = useRef(null);
+  const unlockPromptOpenedRef = useRef(false);
   const alphaCanvasRef = useRef(new WeakMap());
   const [layoutOrder] = useState(createLayoutOrder);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 720);
@@ -104,9 +180,10 @@ function PuzzleRoom() {
   const [hoveredPiece, setHoveredPiece] = useState(null);
   const [isLeavingPage, setIsLeavingPage] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeReference, setActiveReference] = useState(null);
+  const [showUnlockPrompt, setShowUnlockPrompt] = useState(false);
 
   const completed = placed.size === pieces.length;
-  const finalArtwork = artworks.find((item) => item.id === "illust-puzzle");
   const boardArtwork = artworks.find((item) => item.id === "illust-puzzle-game-0");
 
   useEffect(() => {
@@ -148,6 +225,7 @@ function PuzzleRoom() {
         || navigating
         || dragRef.current
         || isMenuOpen
+        || showUnlockPrompt
       ) return;
 
       event.preventDefault();
@@ -163,7 +241,7 @@ function PuzzleRoom() {
       window.removeEventListener("wheel", returnToCreatingProcess);
       if (navigationTimer !== undefined) window.clearTimeout(navigationTimer);
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, showUnlockPrompt]);
 
   useEffect(() => {
     if (!incorrectPiece && !recentPiece) return undefined;
@@ -173,6 +251,33 @@ function PuzzleRoom() {
     }, 520);
     return () => window.clearTimeout(timer);
   }, [incorrectPiece, recentPiece]);
+
+  useEffect(() => {
+    if (!activeReference) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setActiveReference(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [activeReference]);
+
+  useEffect(() => {
+    if (!showUnlockPrompt) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setShowUnlockPrompt(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [showUnlockPrompt]);
+
+  useEffect(() => {
+    if (!completed || unlockPromptOpenedRef.current) return undefined;
+    unlockPromptOpenedRef.current = true;
+    const timer = window.setTimeout(() => {
+      setShowUnlockPrompt(true);
+    }, 760);
+    return () => window.clearTimeout(timer);
+  }, [completed]);
 
   const cellFromPoint = useCallback((clientX, clientY, tolerance = 16) => {
     const board = boardRef.current?.getBoundingClientRect();
@@ -372,7 +477,14 @@ function PuzzleRoom() {
     setHoveredPiece(null);
     setIncorrectPiece(null);
     setRecentPiece(null);
+    setActiveReference(null);
+    setShowUnlockPrompt(false);
+    unlockPromptOpenedRef.current = false;
   };
+
+  const activeReferenceData = puzzleReferences.find(
+    (reference) => reference.id === activeReference,
+  );
 
   return (
     <div
@@ -380,9 +492,20 @@ function PuzzleRoom() {
       style={{ "--puzzle-background": `url(${background})` }}
     >
       <header className="puzzle-header">
-        <a className="puzzle-header__back" href="/" aria-label="Return to Artwork Collection">
-          <span aria-hidden="true">&gt;</span>
-        </a>
+        {completed ? (
+          <button
+            className="puzzle-header__back"
+            type="button"
+            onClick={resetPuzzle}
+            aria-label="Return to the original Puzzle Room"
+          >
+            <span aria-hidden="true">&gt;</span>
+          </button>
+        ) : (
+          <a className="puzzle-header__back" href="/" aria-label="Return to Artwork Collection">
+            <span aria-hidden="true">&gt;</span>
+          </a>
+        )}
         <a className="puzzle-header__logo" href="/" aria-label="Heli home">
           <img src={logo} alt="Heli" />
         </a>
@@ -431,13 +554,33 @@ function PuzzleRoom() {
         </>
       )}
 
-      <main className="puzzle-room" ref={roomRef} inert={isMenuOpen ? true : undefined}>
-        <div className="puzzle-board-column">
-          <section
-            className={`puzzle-board${completed ? " is-complete" : ""}`}
-            ref={boardRef}
-            aria-label="Three by three puzzle board"
+      <main
+        className="puzzle-room"
+        ref={roomRef}
+        inert={isMenuOpen || showUnlockPrompt ? true : undefined}
+      >
+        {completed && (
+          <button
+            className="puzzle-complete-back"
+            type="button"
+            onClick={resetPuzzle}
+            aria-label="Return to the original Puzzle Room"
           >
+            <span aria-hidden="true">&gt;</span>
+          </button>
+        )}
+        <div className="puzzle-board-column">
+          <div
+            className={`puzzle-explorer${activeReference ? " has-active-reference" : ""}`}
+            onClick={() => {
+              if (completed) setActiveReference(null);
+            }}
+          >
+            <section
+              className={`puzzle-board${completed ? " is-complete" : ""}`}
+              ref={boardRef}
+              aria-label="Three by three puzzle board"
+            >
             {boardArtwork?.image && (
               <img className="puzzle-board__guide" src={boardArtwork.image} alt="" draggable={false} />
             )}
@@ -483,24 +626,39 @@ function PuzzleRoom() {
                 aria-hidden="true"
               />
             )}
-            {completed && finalArtwork?.image && (
-              <img
-                className="puzzle-board__final"
-                src={finalArtwork.image}
-                alt={finalArtwork.alt || finalArtwork.title}
+              {completed && (
+                <div className="reference-grid" aria-label="Album references">
+                  {puzzleReferences.map((reference) => {
+                    const piece = pieces[reference.id - 1];
+                    return piece?.image ? (
+                      <ReferencePiece
+                        key={reference.id}
+                        piece={piece}
+                        reference={reference}
+                        active={activeReference === reference.id}
+                        dimmed={activeReference !== null && activeReference !== reference.id}
+                        onToggle={(id) => setActiveReference((current) => current === id ? null : id)}
+                      />
+                    ) : null;
+                  })}
+                </div>
+              )}
+            </section>
+            {completed && activeReferenceData && (
+              <ReferenceAnnotation
+                reference={activeReferenceData}
+                onClose={() => setActiveReference(null)}
               />
             )}
-          </section>
-          <div className="puzzle-status">
-            <p aria-live="polite">
-              {completed ? "Puzzle Complete!" : `${placed.size} of 9 pieces placed`}
-            </p>
-            <div>
-              <button type="button" onClick={resetPuzzle}>Reset Puzzle</button>
-              {completed && <a href="/artwork/illust-puzzle">View Artwork</a>}
-            </div>
-            {completed && finalArtwork?.title && <h1>{finalArtwork.title}</h1>}
           </div>
+          {!completed && (
+            <div className="puzzle-status">
+              <p aria-live="polite">{`${placed.size} of 9 pieces placed`}</p>
+              <div>
+                <button type="button" onClick={resetPuzzle}>Reset Puzzle</button>
+              </div>
+            </div>
+          )}
         </div>
 
         <section className="puzzle-pieces-area" aria-label="Loose puzzle pieces">
@@ -559,6 +717,29 @@ function PuzzleRoom() {
         </section>
 
       </main>
+
+      {showUnlockPrompt && (
+        <div className="puzzle-unlock-prompt" role="presentation">
+          <WindowFrame
+            className="puzzle-unlock-prompt__window"
+            title="PUZZLE COMPLETE!"
+            onClose={() => setShowUnlockPrompt(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="puzzle-unlock-heading"
+          >
+            <div className="puzzle-unlock-prompt__content">
+              <h2 id="puzzle-unlock-heading">Music references unlocked!</h2>
+              <p>
+                Click each puzzle piece to explore music and concepts behind it.
+              </p>
+              <button type="button" onClick={() => setShowUnlockPrompt(false)}>
+                Start Exploration
+              </button>
+            </div>
+          </WindowFrame>
+        </div>
+      )}
     </div>
   );
 }
