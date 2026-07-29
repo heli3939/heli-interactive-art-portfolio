@@ -27,7 +27,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         <nav className="site-header__nav" aria-label="Primary navigation">
           <a href="/#gallery">Artwork Collection</a>
           <a href="/creating-process">Creating Process</a>
-          <a href="/#puzzle">Puzzle Room</a>
+          <a href="/puzzle-room">Puzzle Room</a>
         </nav>
 
         <button
@@ -64,7 +64,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
             <nav id="detail-mobile-navigation" aria-label="Mobile navigation">
               <a href="/#gallery">Artwork Collection</a>
               <a href="/creating-process">Creating Process</a>
-              <a href="/#puzzle">Puzzle Room</a>
+              <a href="/puzzle-room">Puzzle Room</a>
             </nav>
           </aside>
         </>

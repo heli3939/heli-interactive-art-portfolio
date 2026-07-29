@@ -22,7 +22,7 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         <nav className="site-header__nav" aria-label="Primary navigation">
           <a href="/#gallery">Artwork Collection</a>
           <a href="/creating-process" aria-current="page">Creating Process</a>
-          <a href="/#puzzle">Puzzle Room</a>
+          <a href="/puzzle-room">Puzzle Room</a>
         </nav>
         <button
           className="site-header__menu"
@@ -42,7 +42,7 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
             <nav>
               <a href="/#gallery">Artwork Collection</a>
               <a href="/creating-process" aria-current="page" onClick={onMenuClose}>Creating Process</a>
-              <a href="/#puzzle">Puzzle Room</a>
+              <a href="/puzzle-room">Puzzle Room</a>
             </nav>
           </aside>
         </>
@@ -61,7 +61,7 @@ function CreatingProcessPage() {
   const [isProcessPaused, setIsProcessPaused] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLeavingPage, setIsLeavingPage] = useState(false);
+  const [leavingDirection, setLeavingDirection] = useState(null);
   const selectedArtwork = processArtworks.find((artwork) => artwork.id === selectedId);
   const stages = selectedArtwork
     ? [...selectedArtwork.processImages, {
@@ -83,25 +83,35 @@ function CreatingProcessPage() {
     let navigationTimer;
     let navigating = false;
 
-    const returnToGallery = (event) => {
-      if (event.deltaY >= 0 || window.scrollY > 1 || navigating || isMenuOpen) return;
+    const handlePageTransition = (event) => {
+      if (navigating || isMenuOpen || lightboxImage) return;
+      const scrollingUp = event.deltaY < 0;
+      const scrollingDown = event.deltaY > 0;
+      const atTop = window.scrollY <= 1;
+      const atBottom = window.innerHeight + window.scrollY
+        >= document.documentElement.scrollHeight - 2;
+      if ((!scrollingUp || !atTop) && (!scrollingDown || !atBottom)) return;
 
       event.preventDefault();
       navigating = true;
-      setIsLeavingPage(true);
+      setLeavingDirection(scrollingDown ? "puzzle" : "gallery");
       navigationTimer = window.setTimeout(() => {
-        window.sessionStorage.setItem("gallery-entry", "from-process");
-        window.location.assign("/#gallery");
+        if (scrollingDown) {
+          window.location.assign("/puzzle-room");
+        } else {
+          window.sessionStorage.setItem("gallery-entry", "from-process");
+          window.location.assign("/#gallery");
+        }
       }, 650);
     };
 
-    window.addEventListener("wheel", returnToGallery, { passive: false });
+    window.addEventListener("wheel", handlePageTransition, { passive: false });
 
     return () => {
-      window.removeEventListener("wheel", returnToGallery);
+      window.removeEventListener("wheel", handlePageTransition);
       if (navigationTimer !== undefined) window.clearTimeout(navigationTimer);
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, lightboxImage]);
 
   const selectArtwork = (artwork) => {
     setStageIndex(0);
@@ -111,7 +121,9 @@ function CreatingProcessPage() {
 
   return (
     <div
-      className={`process-page${isLeavingPage ? " process-page--leaving" : ""}`}
+      className={`process-page${
+        leavingDirection ? ` process-page--leaving process-page--leaving-${leavingDirection}` : ""
+      }`}
       style={{ "--process-background": `url(${background})` }}
     >
       <ProcessHeader

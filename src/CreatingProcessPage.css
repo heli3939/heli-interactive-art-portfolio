@@ -27,6 +27,10 @@
   pointer-events: none;
 }
 
+.process-page--leaving-puzzle .process-layout {
+  transform: translateY(-28px);
+}
+
 @keyframes process-layout-enter {
   from {
     opacity: 0;

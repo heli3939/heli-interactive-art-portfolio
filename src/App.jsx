@@ -378,7 +378,7 @@ function App() {
             Artwork Collection
           </a>
           <a href="/creating-process">Creating Process</a>
-          <a href="#puzzle">Puzzle Room</a>
+          <a href="/puzzle-room">Puzzle Room</a>
         </nav>
 
       </header>
@@ -421,12 +421,12 @@ function App() {
                   setIsMenuOpen(false);
                 }}
               >
-                Gallery Entrance
+                Artwork Collection
               </a>
               <a href="/creating-process" onClick={() => setIsMenuOpen(false)}>
                 Creating Process
               </a>
-              <a href="#puzzle" onClick={() => setIsMenuOpen(false)}>
+              <a href="/puzzle-room" onClick={() => setIsMenuOpen(false)}>
                 Puzzle Room
               </a>
             </nav>
