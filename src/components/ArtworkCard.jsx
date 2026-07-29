@@ -1,3 +1,5 @@
+import { sitePath } from "../sitePaths.js";
+
 const featuredPositions = {
   "chibi-ykhm": { x: 43, y: 46 },
   "illust-matsuri": { x: 57, y: 48 },
@@ -32,7 +34,7 @@ function ArtworkCard({ artwork, index = 0 }) {
     >
       <a
         className="artwork-card"
-        href={`/artwork/${encodeURIComponent(artwork.id)}`}
+        href={sitePath(`artwork/${encodeURIComponent(artwork.id)}`)}
         aria-label={`View details for ${artwork.title || "Untitled"}`}
       >
         <div className="artwork-card__frame">

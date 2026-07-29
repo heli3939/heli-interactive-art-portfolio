@@ -9,6 +9,7 @@ import projectorOn from "./assets/icons/projector_on.png";
 import projectorMobileOff from "./assets/icons/projector_mobile_off.png";
 import projectorMobileOn from "./assets/icons/projector_mobile_on.png";
 import "./CreatingProcessPage.css";
+import { sitePath } from "./sitePaths.js";
 
 const rotations = [-6, 4, -2, 5, 1, -7, 8, -3, -1, 4, -2, 5];
 
@@ -16,13 +17,13 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
   return (
     <>
       <header className="site-header">
-        <a className="site-header__logo" href="/" aria-label="Heli home">
+        <a className="site-header__logo" href={sitePath()} aria-label="Heli home">
           <img src={logo} alt="Heli" />
         </a>
         <nav className="site-header__nav" aria-label="Primary navigation">
-          <a href="/#gallery">Artwork Collection</a>
-          <a href="/creating-process" aria-current="page">Creating Process</a>
-          <a href="/puzzle-room">Puzzle Room</a>
+          <a href={sitePath("#gallery")}>Artwork Collection</a>
+          <a href={sitePath("creating-process")} aria-current="page">Creating Process</a>
+          <a href={sitePath("puzzle-room")}>Puzzle Room</a>
         </nav>
         <button
           className="site-header__menu"
@@ -40,9 +41,9 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
           <aside className="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation">
             <p className="mobile-nav__heading">Navigation</p>
             <nav>
-              <a href="/#gallery">Artwork Collection</a>
-              <a href="/creating-process" aria-current="page" onClick={onMenuClose}>Creating Process</a>
-              <a href="/puzzle-room">Puzzle Room</a>
+              <a href={sitePath("#gallery")}>Artwork Collection</a>
+              <a href={sitePath("creating-process")} aria-current="page" onClick={onMenuClose}>Creating Process</a>
+              <a href={sitePath("puzzle-room")}>Puzzle Room</a>
             </nav>
           </aside>
         </>
@@ -97,10 +98,10 @@ function CreatingProcessPage() {
       setLeavingDirection(scrollingDown ? "puzzle" : "gallery");
       navigationTimer = window.setTimeout(() => {
         if (scrollingDown) {
-          window.location.assign("/puzzle-room");
+          window.location.assign(sitePath("puzzle-room"));
         } else {
           window.sessionStorage.setItem("gallery-entry", "from-process");
-          window.location.assign("/#gallery");
+          window.location.assign(sitePath("#gallery"));
         }
       }, 650);
     };

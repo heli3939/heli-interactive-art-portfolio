@@ -10,6 +10,7 @@ import standingProjectorOff from "./assets/icons/projector_off.png";
 import standingProjectorOn from "./assets/icons/projector_on.png";
 import mobileProjectorOn from "./assets/icons/projector_mobile_on.png";
 import "./ArtworkDetailPage.css";
+import { sitePath } from "./sitePaths.js";
 
 function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
   return (
@@ -17,7 +18,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
       <header className="site-header">
         <a
           className="site-header__logo"
-          href="/"
+          href={sitePath()}
           aria-label="Heli home"
           tabIndex={isMenuOpen ? -1 : undefined}
         >
@@ -25,9 +26,9 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         </a>
 
         <nav className="site-header__nav" aria-label="Primary navigation">
-          <a href="/#gallery">Artwork Collection</a>
-          <a href="/creating-process">Creating Process</a>
-          <a href="/puzzle-room">Puzzle Room</a>
+          <a href={sitePath("#gallery")}>Artwork Collection</a>
+          <a href={sitePath("creating-process")}>Creating Process</a>
+          <a href={sitePath("puzzle-room")}>Puzzle Room</a>
         </nav>
 
         <button
@@ -62,9 +63,9 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
               Navigation
             </p>
             <nav id="detail-mobile-navigation" aria-label="Mobile navigation">
-              <a href="/#gallery">Artwork Collection</a>
-              <a href="/creating-process">Creating Process</a>
-              <a href="/puzzle-room">Puzzle Room</a>
+              <a href={sitePath("#gallery")}>Artwork Collection</a>
+              <a href={sitePath("creating-process")}>Creating Process</a>
+              <a href={sitePath("puzzle-room")}>Puzzle Room</a>
             </nav>
           </aside>
         </>
@@ -217,7 +218,7 @@ function ArtworkDetailPage({ artworkId }) {
       <div className="detail-page detail-page--unavailable">
         <WindowFrame title="Artwork unavailable" className="detail-unavailable">
           <p>This artwork detail is not available yet.</p>
-          <a href="/">Return home</a>
+          <a href={sitePath()}>Return home</a>
         </WindowFrame>
       </div>
     );
@@ -228,7 +229,7 @@ function ArtworkDetailPage({ artworkId }) {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      window.location.assign("/#gallery");
+      window.location.assign(sitePath("#gallery"));
     }
   };
 

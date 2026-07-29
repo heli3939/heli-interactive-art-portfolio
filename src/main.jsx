@@ -5,11 +5,13 @@ import App from "./App.jsx";
 import ArtworkDetailPage from "./ArtworkDetailPage.jsx";
 import CreatingProcessPage from "./CreatingProcessPage.jsx";
 import PuzzleRoom from "./PuzzleRoom.jsx";
+import { currentSitePath } from "./sitePaths.js";
 
-const artworkPathMatch = window.location.pathname.match(/^\/artwork\/([^/]+)\/?$/);
-const isLegacyDetailPath = window.location.pathname === "/artwork-detail";
-const isCreatingProcessPath = /^\/creating-process\/?$/.test(window.location.pathname);
-const isPuzzleRoomPath = /^\/puzzle-room\/?$/.test(window.location.pathname);
+const sitePathname = currentSitePath();
+const artworkPathMatch = sitePathname.match(/^\/artwork\/([^/]+)\/?$/);
+const isLegacyDetailPath = sitePathname === "/artwork-detail";
+const isCreatingProcessPath = /^\/creating-process\/?$/.test(sitePathname);
+const isPuzzleRoomPath = /^\/puzzle-room\/?$/.test(sitePathname);
 const artworkId = artworkPathMatch
   ? decodeURIComponent(artworkPathMatch[1])
   : new URLSearchParams(window.location.search).get("id") || "chibi-ykhm";

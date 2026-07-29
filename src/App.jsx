@@ -9,6 +9,7 @@ import instagramIcon from "./assets/icons/ig.png";
 import discordIcon from "./assets/icons/discord.png";
 import gmailIcon from "./assets/icons/gmail.png";
 import "./App.css";
+import { sitePath } from "./sitePaths.js";
 
 const contacts = [
   {
@@ -202,7 +203,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
           isNavigating = true;
           gallery.classList.add("gallery--leaving", "gallery--leaving-back");
           navigationTimer = window.setTimeout(() => {
-            window.location.assign("/");
+            window.location.assign(sitePath());
           }, 650);
         }
         return;
@@ -214,7 +215,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
           isNavigating = true;
           gallery.classList.add("gallery--leaving");
           navigationTimer = window.setTimeout(() => {
-            window.location.assign("/creating-process");
+            window.location.assign(sitePath("creating-process"));
           }, 650);
         }
         return;
@@ -390,8 +391,8 @@ function App() {
           >
             Artwork Collection
           </a>
-          <a href="/creating-process">Creating Process</a>
-          <a href="/puzzle-room">Puzzle Room</a>
+          <a href={sitePath("creating-process")}>Creating Process</a>
+          <a href={sitePath("puzzle-room")}>Puzzle Room</a>
         </nav>
 
       </header>
@@ -436,10 +437,10 @@ function App() {
               >
                 Artwork Collection
               </a>
-              <a href="/creating-process" onClick={() => setIsMenuOpen(false)}>
+              <a href={sitePath("creating-process")} onClick={() => setIsMenuOpen(false)}>
                 Creating Process
               </a>
-              <a href="/puzzle-room" onClick={() => setIsMenuOpen(false)}>
+              <a href={sitePath("puzzle-room")} onClick={() => setIsMenuOpen(false)}>
                 Puzzle Room
               </a>
             </nav>

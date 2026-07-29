@@ -5,6 +5,7 @@ import WindowFrame from "./components/WindowFrame";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
 import "./PuzzleRoom.css";
+import { sitePath } from "./sitePaths.js";
 
 const puzzlePieceIds = Array.from(
   { length: 9 },
@@ -232,7 +233,7 @@ function PuzzleRoom() {
       navigating = true;
       setIsLeavingPage(true);
       navigationTimer = window.setTimeout(() => {
-        window.location.assign("/creating-process");
+        window.location.assign(sitePath("creating-process"));
       }, 650);
     };
 
@@ -502,17 +503,17 @@ function PuzzleRoom() {
             <span aria-hidden="true">&gt;</span>
           </button>
         ) : (
-          <a className="puzzle-header__back" href="/" aria-label="Return to Artwork Collection">
+          <a className="puzzle-header__back" href={sitePath()} aria-label="Return to Artwork Collection">
             <span aria-hidden="true">&gt;</span>
           </a>
         )}
-        <a className="puzzle-header__logo" href="/" aria-label="Heli home">
+        <a className="puzzle-header__logo" href={sitePath()} aria-label="Heli home">
           <img src={logo} alt="Heli" />
         </a>
         <nav className="puzzle-header__nav" aria-label="Primary navigation">
-          <a href="/#gallery">Artwork Collection</a>
-          <a href="/creating-process">Creating Process</a>
-          <a href="/puzzle-room" aria-current="page">Puzzle Room</a>
+          <a href={sitePath("#gallery")}>Artwork Collection</a>
+          <a href={sitePath("creating-process")}>Creating Process</a>
+          <a href={sitePath("puzzle-room")} aria-current="page">Puzzle Room</a>
         </nav>
         <button
           className="puzzle-header__menu"
@@ -544,9 +545,9 @@ function PuzzleRoom() {
               Navigation
             </p>
             <nav id="puzzle-mobile-navigation" aria-label="Mobile navigation">
-              <a href="/#gallery">Artwork Collection</a>
-              <a href="/creating-process">Creating Process</a>
-              <a href="/puzzle-room" aria-current="page" onClick={() => setIsMenuOpen(false)}>
+              <a href={sitePath("#gallery")}>Artwork Collection</a>
+              <a href={sitePath("creating-process")}>Creating Process</a>
+              <a href={sitePath("puzzle-room")} aria-current="page" onClick={() => setIsMenuOpen(false)}>
                 Puzzle Room
               </a>
             </nav>
