@@ -296,6 +296,12 @@
 
 .artwork-card-flight.gallery-instruction {
   width: min(var(--card-width), 82vw);
+  transition: opacity 450ms ease;
+}
+
+.artwork-card-flight.gallery-instruction--hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .gallery-instruction__window {
@@ -315,6 +321,48 @@
   font-size: clamp(19px, 1.8vw, 25px);
   line-height: 1.2;
   text-align: left;
+}
+
+.gallery-scroll-cue {
+  position: absolute;
+  z-index: 40;
+  bottom: clamp(18px, 3vh, 30px);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  color: #4d1bd4;
+  font-family: VT323, monospace;
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  transform: translateX(-50%);
+  text-shadow: 0 1px 0 rgb(255 255 255 / 70%);
+}
+
+.gallery-scroll-cue__arrow {
+  font-size: 1.35em;
+  animation: gallery-scroll-cue-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes gallery-scroll-cue-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-scroll-cue__arrow {
+    animation: none;
+  }
 }
 
 .artwork-card {

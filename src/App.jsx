@@ -115,6 +115,15 @@ function ContactLinks({ mobile = false }) {
 
 function FloatingGallery({ disabled = false, entryMode = "default" }) {
   const galleryRef = useRef(null);
+  const [isInstructionVisible, setIsInstructionVisible] = useState(true);
+
+  useEffect(() => {
+    const instructionTimer = window.setTimeout(() => {
+      setIsInstructionVisible(false);
+    }, 2500);
+
+    return () => window.clearTimeout(instructionTimer);
+  }, []);
 
   useEffect(() => {
     const gallery = galleryRef.current;
@@ -268,7 +277,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
     >
       <div className="gallery__space">
         <div
-          className="artwork-card-flight gallery-instruction"
+          className={`artwork-card-flight gallery-instruction${isInstructionVisible ? "" : " gallery-instruction--hidden"}`}
           style={{
             "--card-x": "50%",
             "--card-y": "52%",
@@ -278,7 +287,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         >
           <WindowFrame title="*Hint*" className="gallery-instruction__window">
             <p>
-              Scroll to explore the my artworks. Click an artwork to
+              Scroll to explore my artworks. Click an artwork to
               view its details.
             </p>
           </WindowFrame>
@@ -286,6 +295,10 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         {galleryArtworks.map((artwork, index) => (
           <ArtworkCard artwork={artwork} index={index} key={artwork.id} />
         ))}
+      </div>
+      <div className="gallery-scroll-cue" aria-hidden="true">
+        <span className="gallery-scroll-cue__arrow">↕</span>
+        <span>Scroll to explore</span>
       </div>
     </section>
   );

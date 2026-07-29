@@ -75,7 +75,7 @@ function CreatingProcessPage() {
     if (!selectedArtwork || stages.length < 2 || isProcessPaused) return undefined;
     const timer = window.setInterval(() => {
       setStageIndex((index) => (index + 1) % stages.length);
-    }, 3200);
+    }, 1500);
     return () => window.clearInterval(timer);
   }, [selectedArtwork, stages.length, isProcessPaused]);
 

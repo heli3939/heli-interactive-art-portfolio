@@ -207,7 +207,7 @@ function ArtworkDetailPage({ artworkId }) {
 
     const timer = window.setInterval(() => {
       setStageIndex((index) => (index + 1) % stageCount);
-    }, 3200);
+    }, 1500);
 
     return () => window.clearInterval(timer);
   }, [isProjectorOn, stageCount, isProcessPaused]);
