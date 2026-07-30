@@ -209,6 +209,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
 
       if ((movingForward && canMoveForward) || (!movingForward && canMoveBackward)) {
         event.preventDefault();
+        setIsInstructionVisible(false);
         progress = Math.min(
           maximumProgress,
           Math.max(minimumProgress, progress + event.deltaY * 0.0009),
@@ -243,9 +244,10 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         || (!movingForward && canMoveBackward)
       ) {
         event.preventDefault();
+        setIsInstructionVisible(false);
         progress = Math.min(
           maximumProgress,
-          Math.max(minimumProgress, progress + deltaY * 0.0045),
+          Math.max(minimumProgress, progress + deltaY * 0.0016),
         );
         requestRender();
       }
