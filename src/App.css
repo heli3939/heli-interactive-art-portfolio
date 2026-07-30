@@ -511,10 +511,17 @@ a.artwork-card:focus-visible .artwork-card__frame {
   perspective: none;
 }
 
+.gallery--touch-carousel .artwork-card-flight[hidden] {
+  display: none !important;
+}
+
 .gallery--touch-carousel .artwork-card-flight:not(.gallery-instruction) {
   top: 50%;
   left: 50%;
   width: min(var(--card-width), 72vw);
+  transform: translate(-50%, calc(-50% - 5vh));
+  transform-style: flat;
+  will-change: auto;
   transition: opacity 180ms ease;
 }
 

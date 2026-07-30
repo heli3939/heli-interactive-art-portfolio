@@ -132,6 +132,11 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
     if (!gallery) return undefined;
 
     const cards = [...gallery.querySelectorAll(".artwork-card-flight")];
+    const artworkCards = [
+      ...gallery.querySelectorAll(
+        ".artwork-card-flight:not(.gallery-instruction)",
+      ),
+    ];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const minimumProgress = 0.16;
     const stagger = 0.68;
@@ -152,28 +157,31 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
     let touchDeltaY = 0;
     let touchMode = false;
     let hasTouchNavigated = false;
+    let suppressClickUntil = 0;
     const maximumProgress = 1 + (cards.length - 1) * stagger;
     const finalArtworkRevealProgress = (cards.length - 1) * stagger + 0.16;
     const fullCardProgress = 1100 / 1620;
     let touchArtworkIndex = Math.min(
-      cards.length - 1,
-      Math.max(1, Math.round((progress - fullCardProgress) / stagger)),
+      artworkCards.length - 1,
+      Math.max(0, Math.round((progress - fullCardProgress) / stagger) - 1),
     );
 
     const renderDepth = () => {
       animationFrame = undefined;
 
       if (touchMode) {
-        setHasMoreArtworks(touchArtworkIndex < cards.length - 1);
-        cards.forEach((card, index) => {
-          const isInstruction = card.classList.contains("gallery-instruction");
+        setHasMoreArtworks(touchArtworkIndex < artworkCards.length - 1);
+        artworkCards.forEach((card, index) => {
           const isCurrentArtwork = index === touchArtworkIndex;
+          card.hidden = !isCurrentArtwork;
+          card.inert = !isCurrentArtwork;
           card.style.setProperty("--scroll-z", "0px");
           card.style.setProperty(
             "--scroll-opacity",
-            isInstruction || isCurrentArtwork ? "1" : "0",
+            isCurrentArtwork ? "1" : "0",
           );
-          card.style.pointerEvents = isCurrentArtwork ? "" : "none";
+          card.style.pointerEvents = isCurrentArtwork ? "auto" : "none";
+          card.style.zIndex = isCurrentArtwork ? "1" : "0";
         });
         return;
       }
@@ -247,7 +255,10 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       if (!touchMode) {
         touchMode = true;
         gallery.classList.add("gallery--touch-carousel");
-        touchArtworkIndex = Math.min(cards.length - 1, Math.max(1, touchArtworkIndex));
+        touchArtworkIndex = Math.min(
+          artworkCards.length - 1,
+          Math.max(0, touchArtworkIndex),
+        );
         requestRender();
       }
       touchStartY = event.touches[0].clientY;
@@ -265,8 +276,8 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       touchDeltaY = touchStartY - currentTouchY;
 
       const movingForward = touchDeltaY > 0;
-      const canMoveForward = touchArtworkIndex < cards.length - 1;
-      const canMoveBackward = touchArtworkIndex > 1;
+      const canMoveForward = touchArtworkIndex < artworkCards.length - 1;
+      const canMoveBackward = touchArtworkIndex > 0;
 
       if (
         (movingForward && canMoveForward)
@@ -280,19 +291,26 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       if (touchStartY === null) return;
 
       if (Math.abs(touchDeltaY) >= 24) {
+        suppressClickUntil = Date.now() + 500;
         if (!hasTouchNavigated) {
           hasTouchNavigated = true;
-          touchArtworkIndex = 1;
-        } else if (touchDeltaY > 0 && touchArtworkIndex < cards.length - 1) {
+          touchArtworkIndex = 0;
+        } else if (
+          touchDeltaY > 0
+          && touchArtworkIndex < artworkCards.length - 1
+        ) {
           touchArtworkIndex += 1;
-        } else if (touchDeltaY < 0 && touchArtworkIndex > 1) {
+        } else if (touchDeltaY < 0 && touchArtworkIndex > 0) {
           touchArtworkIndex -= 1;
         }
 
         setIsInstructionVisible(false);
         progress = Math.min(
           maximumProgress,
-          Math.max(minimumProgress, touchArtworkIndex * stagger + fullCardProgress),
+          Math.max(
+            minimumProgress,
+            (touchArtworkIndex + 1) * stagger + fullCardProgress,
+          ),
         );
         requestRender();
       }
@@ -303,13 +321,18 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
 
     const resetGallery = () => {
       progress = minimumProgress;
-      touchArtworkIndex = 1;
+      touchArtworkIndex = 0;
       hasTouchNavigated = false;
       requestRender();
     };
 
     const savePositionBeforeOpeningArtwork = (event) => {
       if (!event.target.closest("a.artwork-card")) return;
+      if (Date.now() < suppressClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
 
       window.sessionStorage.setItem("gallery-entry", "restore-progress");
       window.sessionStorage.setItem("gallery-progress", String(progress));
@@ -332,7 +355,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
     gallery.addEventListener("touchcancel", handleTouchEnd);
     window.addEventListener("scroll", resetWhenLeavingGallery, { passive: true });
     window.addEventListener("gallery:reset", resetGallery);
-    gallery.addEventListener("click", savePositionBeforeOpeningArtwork);
+    gallery.addEventListener("click", savePositionBeforeOpeningArtwork, true);
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
@@ -342,8 +365,14 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       gallery.removeEventListener("touchcancel", handleTouchEnd);
       window.removeEventListener("scroll", resetWhenLeavingGallery);
       window.removeEventListener("gallery:reset", resetGallery);
-      gallery.removeEventListener("click", savePositionBeforeOpeningArtwork);
+      gallery.removeEventListener("click", savePositionBeforeOpeningArtwork, true);
       gallery.classList.remove("gallery--touch-carousel");
+      artworkCards.forEach((card) => {
+        card.hidden = false;
+        card.inert = false;
+        card.style.pointerEvents = "";
+        card.style.zIndex = "";
+      });
       if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame);
     };
   }, [disabled, entryMode]);
