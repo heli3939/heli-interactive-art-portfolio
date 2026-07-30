@@ -148,6 +148,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         : minimumProgress;
     let progress = startingProgress;
     let animationFrame;
+    let previousTouchY = null;
     const maximumProgress = 1 + (cards.length - 1) * stagger;
     const finalArtworkRevealProgress = (cards.length - 1) * stagger + 0.16;
 
@@ -216,6 +217,44 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       }
     };
 
+    const handleTouchStart = (event) => {
+      if (disabled || reducedMotion || event.touches.length !== 1) return;
+      previousTouchY = event.touches[0].clientY;
+    };
+
+    const handleTouchMove = (event) => {
+      if (
+        disabled
+        || reducedMotion
+        || previousTouchY === null
+        || event.touches.length !== 1
+      ) return;
+
+      const currentTouchY = event.touches[0].clientY;
+      const deltaY = previousTouchY - currentTouchY;
+      previousTouchY = currentTouchY;
+
+      const movingForward = deltaY > 0;
+      const canMoveForward = progress < maximumProgress;
+      const canMoveBackward = progress > minimumProgress;
+
+      if (
+        (movingForward && canMoveForward)
+        || (!movingForward && canMoveBackward)
+      ) {
+        event.preventDefault();
+        progress = Math.min(
+          maximumProgress,
+          Math.max(minimumProgress, progress + deltaY * 0.0045),
+        );
+        requestRender();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      previousTouchY = null;
+    };
+
     const resetGallery = () => {
       progress = minimumProgress;
       requestRender();
@@ -239,12 +278,20 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
 
     renderDepth();
     window.addEventListener("wheel", handleWheel, { passive: false });
+    gallery.addEventListener("touchstart", handleTouchStart, { passive: true });
+    gallery.addEventListener("touchmove", handleTouchMove, { passive: false });
+    gallery.addEventListener("touchend", handleTouchEnd);
+    gallery.addEventListener("touchcancel", handleTouchEnd);
     window.addEventListener("scroll", resetWhenLeavingGallery, { passive: true });
     window.addEventListener("gallery:reset", resetGallery);
     gallery.addEventListener("click", savePositionBeforeOpeningArtwork);
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      gallery.removeEventListener("touchstart", handleTouchStart);
+      gallery.removeEventListener("touchmove", handleTouchMove);
+      gallery.removeEventListener("touchend", handleTouchEnd);
+      gallery.removeEventListener("touchcancel", handleTouchEnd);
       window.removeEventListener("scroll", resetWhenLeavingGallery);
       window.removeEventListener("gallery:reset", resetGallery);
       gallery.removeEventListener("click", savePositionBeforeOpeningArtwork);
@@ -272,7 +319,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         >
           <WindowFrame title="*Hint*" className="gallery-instruction__window">
             <p>
-              Scroll to explore my artworks. Click an artwork to
+              Scroll/Swipe to explore my artworks. Click an artwork to
               view its details.
             </p>
           </WindowFrame>
@@ -286,7 +333,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         aria-hidden="true"
       >
         <span className="gallery-scroll-cue__arrow">↕</span>
-        <span>Scroll to explore</span>
+        <span>Scroll/Swipe to explore</span>
       </div>
     </section>
   );

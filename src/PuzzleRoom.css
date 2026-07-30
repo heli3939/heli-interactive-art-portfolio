@@ -375,6 +375,7 @@
 
 .puzzle-pieces-area {
   position: relative;
+  container-type: inline-size;
   min-height: 639px;
   overflow: hidden;
   border: 1px solid rgb(108 196 255 / 32%);
@@ -399,7 +400,7 @@
 
 .puzzle-piece {
   position: absolute;
-  width: clamp(280px, 30vw, 390px);
+  width: min(72cqw, 460px);
   aspect-ratio: 1;
   padding: 0;
   border: 0;
@@ -452,9 +453,13 @@
 }
 
 .puzzle-piece.is-alpha-hover,
-.puzzle-piece:focus-visible,
-.puzzle-piece.is-selected {
+.puzzle-piece:focus-visible {
   z-index: 8;
+  outline: none;
+}
+
+.puzzle-piece.is-selected {
+  z-index: 100;
   outline: none;
 }
 
@@ -867,7 +872,7 @@
   }
 
   .puzzle-piece {
-    width: clamp(195px, 57vw, 225px);
+    width: min(78cqw, 260px);
   }
 
   .puzzle-status {

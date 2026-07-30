@@ -248,7 +248,7 @@ function ArtworkDetailPage({ artworkId }) {
 
       <main className="detail-layout" inert={isMenuOpen ? true : undefined}>
         <button
-          className="detail-back"
+          className={`detail-back${isMenuOpen ? " detail-back--menu-hidden" : ""}`}
           type="button"
           aria-label="Go back"
           onClick={goBack}

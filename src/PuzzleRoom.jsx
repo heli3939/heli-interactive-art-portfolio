@@ -320,49 +320,6 @@ function PuzzleRoom() {
     );
   };
 
-  const shapesOverlap = (activeElement, activeBounds, otherElement) => {
-    const otherBounds = otherElement.getBoundingClientRect();
-    const left = Math.max(activeBounds.left, otherBounds.left);
-    const right = Math.min(activeBounds.right, otherBounds.right);
-    const top = Math.max(activeBounds.top, otherBounds.top);
-    const bottom = Math.min(activeBounds.bottom, otherBounds.bottom);
-    if (left >= right || top >= bottom) return false;
-
-    const activeImage = activeElement.querySelector("img");
-    const otherImage = otherElement.querySelector("img");
-    const sampleStep = Math.max(2, Math.min(5, (right - left) / 20, (bottom - top) / 20));
-
-    for (let y = top; y < bottom; y += sampleStep) {
-      for (let x = left; x < right; x += sampleStep) {
-        if (
-          isOpaqueAt(activeImage, activeBounds, x, y)
-          && isOpaqueAt(otherImage, otherBounds, x, y)
-        ) return true;
-      }
-    }
-    return false;
-  };
-
-  const collidesWithLoosePiece = (pieceId, nextX, nextY) => {
-    const activeElement = document.querySelector(
-      `.puzzle-piece[data-piece-id="${pieceId}"]`,
-    );
-    if (!activeElement) return false;
-    const currentBounds = activeElement.getBoundingClientRect();
-    const activeBounds = {
-      left: nextX,
-      top: nextY,
-      width: currentBounds.width,
-      height: currentBounds.height,
-      right: nextX + currentBounds.width,
-      bottom: nextY + currentBounds.height,
-    };
-    return [...document.querySelectorAll(".puzzle-piece")].some((element) => (
-      element !== activeElement
-      && shapesOverlap(activeElement, activeBounds, element)
-    ));
-  };
-
   const visiblePieceAtPoint = (event) => {
     const elements = document.elementsFromPoint(event.clientX, event.clientY);
     for (const element of elements) {
@@ -407,14 +364,6 @@ function PuzzleRoom() {
       if (!current) return current;
       const nextX = event.clientX - current.offsetX;
       const nextY = event.clientY - current.offsetY;
-      const distance = Math.hypot(nextX - current.x, nextY - current.y);
-      const steps = Math.max(1, Math.ceil(distance / 20));
-      for (let step = 1; step <= steps; step += 1) {
-        const progress = step / steps;
-        const sampleX = current.x + (nextX - current.x) * progress;
-        const sampleY = current.y + (nextY - current.y) * progress;
-        if (collidesWithLoosePiece(current.id, sampleX, sampleY)) return current;
-      }
       return { ...current, x: nextX, y: nextY };
     });
     setHighlighted(cellFromPoint(event.clientX, event.clientY));
@@ -462,7 +411,7 @@ function PuzzleRoom() {
       style={{ "--puzzle-background": `url(${background})` }}
     >
       <header className="site-header">
-        {completed && (
+        {completed && !isMenuOpen && (
           <button
             className="puzzle-header__back"
             type="button"
@@ -525,7 +474,7 @@ function PuzzleRoom() {
         ref={roomRef}
         inert={isMenuOpen || showUnlockPrompt ? true : undefined}
       >
-        {completed && (
+        {completed && !isMenuOpen && (
           <button
             className="puzzle-complete-back"
             type="button"

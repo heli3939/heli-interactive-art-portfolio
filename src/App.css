@@ -195,15 +195,13 @@
 
 .contact-list {
   display: grid;
-  gap: 4px;
-  margin-top: 10px;
   padding: 0 20px;
 }
 
 .contact-list__link {
   display: grid;
   grid-template-columns: 68px minmax(0, 1fr);
-  gap: 8px;
+  gap: 5px;
   align-items: center;
   min-width: 0;
   min-height: 60px;
@@ -233,10 +231,11 @@
 }
 
 .contact-icon img {
-  width: 112%;
-  height: 112%;
+  width: 150%;
+  height: 150%;
   filter: drop-shadow(0 5px 4px rgb(42 0 145 / 35%));
   object-fit: contain;
+  transform: translate(-4%, 1%);
   transition:
     transform 180ms ease,
     filter 180ms ease;
@@ -247,7 +246,7 @@
 .mobile-contact__link:hover .contact-icon img,
 .mobile-contact__link:focus-visible .contact-icon img {
   filter: drop-shadow(0 8px 6px rgb(42 0 145 / 50%));
-  transform: translateY(-3px) scale(1.12);
+  transform: translate(-4%, calc(1% - 3px)) scale(1.12);
 }
 
 .mobile-contact {
