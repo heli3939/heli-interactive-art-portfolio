@@ -1,5 +1,8 @@
 .window-frame {
+  --textbox-padding-inline: clamp(15px, 8.6cqi, 43px);
+
   position: relative;
+  container-type: inline-size;
   overflow: hidden;
   background: #ded9f4;
   border: 1px solid #000;

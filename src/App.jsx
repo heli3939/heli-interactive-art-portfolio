@@ -7,7 +7,7 @@ import portrait from "./assets/artworks/chibi/pfp/pfp_1000px.jpg";
 import logo from "./assets/icons/logo.png";
 import instagramIcon from "./assets/icons/ig.png";
 import discordIcon from "./assets/icons/discord.png";
-import gmailIcon from "./assets/icons/gmail.png";
+import pixivIcon from "./assets/icons/pixiv.png";
 import "./App.css";
 import { sitePath } from "./sitePaths.js";
 
@@ -25,10 +25,10 @@ const contacts = [
     icon: discordIcon,
   },
   {
-    name: "Email",
-    label: "luo325692@gmail.com",
-    href: "mailto:luo325692@gmail.com",
-    icon: gmailIcon,
+    name: "Pixiv",
+    label: "ID: 79458501",
+    href: "https://www.pixiv.net/en/users/79458501",
+    icon: pixivIcon,
   },
 ];
 
@@ -117,6 +117,7 @@ function ContactLinks({ mobile = false }) {
 function FloatingGallery({ disabled = false, entryMode = "default" }) {
   const galleryRef = useRef(null);
   const [isInstructionVisible, setIsInstructionVisible] = useState(true);
+  const [hasMoreArtworks, setHasMoreArtworks] = useState(true);
 
   useEffect(() => {
     const instructionTimer = window.setTimeout(() => {
@@ -147,12 +148,12 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         : minimumProgress;
     let progress = startingProgress;
     let animationFrame;
-    let navigationTimer;
-    let isNavigating = false;
     const maximumProgress = 1 + (cards.length - 1) * stagger;
+    const finalArtworkRevealProgress = (cards.length - 1) * stagger + 0.16;
 
     const renderDepth = () => {
       animationFrame = undefined;
+      setHasMoreArtworks(!reducedMotion && progress < finalArtworkRevealProgress);
 
       cards.forEach((card, index) => {
         if (reducedMotion) {
@@ -170,7 +171,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
           ? -220 + cardProgress * 220
           : -1100 + cardProgress * 1620;
         const fadeIn = Math.min(1, cardProgress / 0.16);
-        const fadeOut = Math.min(1, (1 - cardProgress) / 0.09);
+        const fadeOut = Math.min(1, (1 - cardProgress) / 0.07);
         const opacity = Math.max(0, Math.min(fadeIn, fadeOut));
 
         card.style.setProperty("--scroll-z", `${zPosition}px`);
@@ -198,26 +199,10 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       const canMoveBackward = progress > minimumProgress;
 
       if (!movingForward && !canMoveBackward) {
-        event.preventDefault();
-        if (!isNavigating) {
-          isNavigating = true;
-          gallery.classList.add("gallery--leaving", "gallery--leaving-back");
-          navigationTimer = window.setTimeout(() => {
-            window.location.assign(sitePath());
-          }, 650);
-        }
         return;
       }
 
       if (movingForward && !canMoveForward) {
-        event.preventDefault();
-        if (!isNavigating) {
-          isNavigating = true;
-          gallery.classList.add("gallery--leaving");
-          navigationTimer = window.setTimeout(() => {
-            window.location.assign(sitePath("creating-process"));
-          }, 650);
-        }
         return;
       }
 
@@ -264,7 +249,6 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       window.removeEventListener("gallery:reset", resetGallery);
       gallery.removeEventListener("click", savePositionBeforeOpeningArtwork);
       if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame);
-      if (navigationTimer !== undefined) window.clearTimeout(navigationTimer);
     };
   }, [disabled, entryMode]);
 
@@ -297,7 +281,10 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
           <ArtworkCard artwork={artwork} index={index} key={artwork.id} />
         ))}
       </div>
-      <div className="gallery-scroll-cue" aria-hidden="true">
+      <div
+        className={`gallery-scroll-cue${hasMoreArtworks ? "" : " gallery-scroll-cue--hidden"}`}
+        aria-hidden="true"
+      >
         <span className="gallery-scroll-cue__arrow">↕</span>
         <span>Scroll to explore</span>
       </div>
@@ -339,23 +326,6 @@ function App() {
   }, [currentPage]);
 
   useEffect(() => {
-    if (currentPage !== "about") return undefined;
-
-    const openGalleryOnScroll = (event) => {
-      const atPageBottom = window.scrollY + window.innerHeight
-        >= document.documentElement.scrollHeight - 2;
-
-      if (event.deltaY > 0 && atPageBottom && !isMenuOpen) {
-        event.preventDefault();
-        window.location.hash = "gallery";
-      }
-    };
-
-    window.addEventListener("wheel", openGalleryOnScroll, { passive: false });
-    return () => window.removeEventListener("wheel", openGalleryOnScroll);
-  }, [currentPage, isMenuOpen]);
-
-  useEffect(() => {
     if (!isMenuOpen) return undefined;
 
     const previousOverflow = document.body.style.overflow;
@@ -394,20 +364,19 @@ function App() {
           <a href={sitePath("creating-process")}>Creating Process</a>
           <a href={sitePath("puzzle-room")}>Puzzle Room</a>
         </nav>
-
+        <button
+          className="site-header__menu"
+          type="button"
+          aria-label={isMenuOpen ? "Close navigation" : "Open navigation"}
+          aria-controls="mobile-navigation"
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
       </header>
-      <button
-        className="site-header__menu site-header__menu--home"
-        type="button"
-        aria-label={isMenuOpen ? "Close navigation" : "Open navigation"}
-        aria-controls="mobile-navigation"
-        aria-expanded={isMenuOpen}
-        onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
-      >
-        <span />
-        <span />
-        <span />
-      </button>
 
       {isMenuOpen && (
         <>

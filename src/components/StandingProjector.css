@@ -1,0 +1,128 @@
+.standing-projector {
+  position: relative;
+  width: min(401px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.standing-projector__image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
+}
+
+.standing-projector__artwork {
+  position: absolute;
+  z-index: 3;
+  top: 19%;
+  left: 22%;
+  width: 27%;
+  padding: 5px;
+  border: 3px solid #76f1ff;
+  background: #76f1ff;
+  background-blend-mode: color-burn;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 28%);
+  transform: rotate(0deg);
+  animation: standing-projector-artwork-insert 720ms cubic-bezier(.22, .78, .28, 1) both;
+}
+
+.standing-projector__artwork img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes standing-projector-artwork-insert {
+  0% {
+    opacity: 1;
+    transform: translateX(-310%) scale(1.45) rotate(0deg);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateX(-12%) scale(1.05) rotate(0deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .standing-projector__artwork {
+    animation-duration: 0.01ms;
+  }
+}
+
+.mobile-projector {
+  display: none;
+}
+
+@keyframes mobile-projector-artwork-insert {
+  0% {
+    opacity: 1;
+    transform: translateX(-310%) scale(1.45);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateX(-12%) scale(1.05);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@media (max-width: 1024px) {
+  .mobile-projector {
+    position: relative;
+    display: block;
+    width: min(320px, 50%, 30svh);
+    aspect-ratio: 1.93;
+    margin: 8px auto 0;
+    overflow: visible;
+    filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
+  }
+
+  .mobile-projector__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    clip-path: inset(0 0 21.6%);
+    transform: translateY(-21.6%);
+  }
+
+  .mobile-projector__artwork {
+    position: absolute;
+    z-index: 3;
+    top: 8%;
+    left: 36.5%;
+    width: 27%;
+    padding: 3px;
+    border: 2px solid #76f1ff;
+    background: #76f1ff;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 28%);
+    animation: mobile-projector-artwork-insert 720ms cubic-bezier(.22, .78, .28, 1) both;
+  }
+
+  .mobile-projector__artwork img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-projector__artwork {
+    animation-duration: 0.01ms;
+  }
+}

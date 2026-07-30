@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import WindowFrame from "./components/WindowFrame";
 import ImageLightbox from "./components/ImageLightbox";
+import StandingProjector, { MobileProjector } from "./components/StandingProjector";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
-import projectorOff from "./assets/icons/projector_off.png";
-import projectorOn from "./assets/icons/projector_on.png";
-import projectorMobileOff from "./assets/icons/projector_mobile_off.png";
-import projectorMobileOn from "./assets/icons/projector_mobile_on.png";
 import "./CreatingProcessPage.css";
 import { sitePath } from "./sitePaths.js";
 
@@ -58,12 +55,15 @@ function CreatingProcessPage() {
   const [selectedId, setSelectedId] = useState(
     processArtworks.some((artwork) => artwork.id === initialId) ? initialId : null,
   );
+  const [projectorPhase, setProjectorPhase] = useState(
+    processArtworks.some((artwork) => artwork.id === initialId) ? "on" : "off",
+  );
   const [stageIndex, setStageIndex] = useState(0);
   const [isProcessPaused, setIsProcessPaused] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [leavingDirection, setLeavingDirection] = useState(null);
   const selectedArtwork = processArtworks.find((artwork) => artwork.id === selectedId);
+  const isProjectorOn = projectorPhase === "on";
   const stages = selectedArtwork
     ? [...selectedArtwork.processImages, {
         id: `${selectedArtwork.id}-final`,
@@ -73,58 +73,29 @@ function CreatingProcessPage() {
     : [];
 
   useEffect(() => {
-    if (!selectedArtwork || stages.length < 2 || isProcessPaused) return undefined;
+    if (!isProjectorOn || !selectedArtwork || stages.length < 2 || isProcessPaused) return undefined;
     const timer = window.setInterval(() => {
       setStageIndex((index) => (index + 1) % stages.length);
     }, 1500);
     return () => window.clearInterval(timer);
-  }, [selectedArtwork, stages.length, isProcessPaused]);
+  }, [isProjectorOn, selectedArtwork, stages.length, isProcessPaused]);
 
   useEffect(() => {
-    let navigationTimer;
-    let navigating = false;
-
-    const handlePageTransition = (event) => {
-      if (navigating || isMenuOpen || lightboxImage) return;
-      const scrollingUp = event.deltaY < 0;
-      const scrollingDown = event.deltaY > 0;
-      const atTop = window.scrollY <= 1;
-      const atBottom = window.innerHeight + window.scrollY
-        >= document.documentElement.scrollHeight - 2;
-      if ((!scrollingUp || !atTop) && (!scrollingDown || !atBottom)) return;
-
-      event.preventDefault();
-      navigating = true;
-      setLeavingDirection(scrollingDown ? "puzzle" : "gallery");
-      navigationTimer = window.setTimeout(() => {
-        if (scrollingDown) {
-          window.location.assign(sitePath("puzzle-room"));
-        } else {
-          window.sessionStorage.setItem("gallery-entry", "from-process");
-          window.location.assign(sitePath("#gallery"));
-        }
-      }, 650);
-    };
-
-    window.addEventListener("wheel", handlePageTransition, { passive: false });
-
-    return () => {
-      window.removeEventListener("wheel", handlePageTransition);
-      if (navigationTimer !== undefined) window.clearTimeout(navigationTimer);
-    };
-  }, [isMenuOpen, lightboxImage]);
+    if (projectorPhase !== "inserting") return undefined;
+    const timer = window.setTimeout(() => setProjectorPhase("on"), 720);
+    return () => window.clearTimeout(timer);
+  }, [projectorPhase]);
 
   const selectArtwork = (artwork) => {
     setStageIndex(0);
     setSelectedId(artwork.id);
+    setProjectorPhase("inserting");
     window.history.replaceState(null, "", `/creating-process?artwork=${encodeURIComponent(artwork.id)}`);
   };
 
   return (
     <div
-      className={`process-page${
-        leavingDirection ? ` process-page--leaving process-page--leaving-${leavingDirection}` : ""
-      }`}
+      className="process-page"
       style={{ "--process-background": `url(${background})` }}
     >
       <ProcessHeader
@@ -134,10 +105,10 @@ function CreatingProcessPage() {
       />
       <main className="process-layout" inert={isMenuOpen ? true : undefined}>
         <section className="process-selector" aria-label="Artworks with creating processes">
-          <img
+          <StandingProjector
+            artwork={selectedArtwork}
+            phase={projectorPhase}
             className="process-projector"
-            src={selectedArtwork ? projectorOn : projectorOff}
-            alt={selectedArtwork ? "Projector on" : "Projector off"}
           />
           <div className="process-stack">
             {processArtworks.map((artwork, index) => {
@@ -163,26 +134,35 @@ function CreatingProcessPage() {
           </div>
         </section>
 
-        <section className={`process-viewer${selectedArtwork ? " process-viewer--active" : ""}`} aria-live="polite">
-          {selectedArtwork ? (
+        <section className={`process-viewer${isProjectorOn ? " process-viewer--active" : ""}`} aria-live="polite">
+          {isProjectorOn && selectedArtwork ? (
             <>
-              <img
-                className="process-viewer__main"
-                src={stages[stageIndex].image}
-                alt={stages[stageIndex].alt}
-                tabIndex="0"
-                onMouseEnter={() => setIsProcessPaused(true)}
-                onMouseLeave={() => setIsProcessPaused(false)}
-                onFocus={() => setIsProcessPaused(true)}
-                onBlur={() => setIsProcessPaused(false)}
-                onClick={() => setLightboxImage(stages[stageIndex])}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setLightboxImage(stages[stageIndex]);
-                  }
-                }}
-              />
+              <h1 className="process-viewer__title">{selectedArtwork.title}</h1>
+              <div className="process-viewer__stage">
+                <img
+                  className="process-viewer__size-reference"
+                  src={selectedArtwork.image}
+                  alt=""
+                  aria-hidden="true"
+                />
+                <img
+                  className="process-viewer__main"
+                  src={stages[stageIndex].image}
+                  alt={stages[stageIndex].alt}
+                  tabIndex="0"
+                  onMouseEnter={() => setIsProcessPaused(true)}
+                  onMouseLeave={() => setIsProcessPaused(false)}
+                  onFocus={() => setIsProcessPaused(true)}
+                  onBlur={() => setIsProcessPaused(false)}
+                  onClick={() => setLightboxImage(stages[stageIndex])}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setLightboxImage(stages[stageIndex]);
+                    }
+                  }}
+                />
+              </div>
               <div className="process-thumbnails">
                 {stages.map((stage, index) => (
                   <button
@@ -215,15 +195,11 @@ function CreatingProcessPage() {
             </WindowFrame>
           )}
         </section>
-        <div
-          className={`process-mobile-projector${selectedArtwork ? " process-mobile-projector--on" : ""}`}
-          key={selectedArtwork ? "projector-on" : "projector-off"}
-        >
-          <img
-            src={selectedArtwork ? projectorMobileOn : projectorMobileOff}
-            alt={selectedArtwork ? "Projector on" : "Projector off"}
-          />
-        </div>
+        <MobileProjector
+          artwork={selectedArtwork}
+          phase={projectorPhase}
+          className="process-mobile-projector"
+        />
       </main>
       <ImageLightbox
         image={lightboxImage?.image}

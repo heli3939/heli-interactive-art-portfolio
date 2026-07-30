@@ -131,7 +131,6 @@ function ReferenceAnnotation({ reference, onClose }) {
         "--reference-column": column,
       }}
     >
-      <span className="reference-note__line" aria-hidden="true" />
       <div className="reference-note__body">
         <a
           className="reference-note__cover-link"
@@ -179,7 +178,6 @@ function PuzzleRoom() {
   const [incorrectPiece, setIncorrectPiece] = useState(null);
   const [recentPiece, setRecentPiece] = useState(null);
   const [hoveredPiece, setHoveredPiece] = useState(null);
-  const [isLeavingPage, setIsLeavingPage] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeReference, setActiveReference] = useState(null);
   const [showUnlockPrompt, setShowUnlockPrompt] = useState(false);
@@ -214,35 +212,6 @@ function PuzzleRoom() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [isMenuOpen]);
-
-  useEffect(() => {
-    let navigationTimer;
-    let navigating = false;
-
-    const returnToCreatingProcess = (event) => {
-      if (
-        event.deltaY >= 0
-        || window.scrollY > 1
-        || navigating
-        || dragRef.current
-        || isMenuOpen
-        || showUnlockPrompt
-      ) return;
-
-      event.preventDefault();
-      navigating = true;
-      setIsLeavingPage(true);
-      navigationTimer = window.setTimeout(() => {
-        window.location.assign(sitePath("creating-process"));
-      }, 650);
-    };
-
-    window.addEventListener("wheel", returnToCreatingProcess, { passive: false });
-    return () => {
-      window.removeEventListener("wheel", returnToCreatingProcess);
-      if (navigationTimer !== undefined) window.clearTimeout(navigationTimer);
-    };
-  }, [isMenuOpen, showUnlockPrompt]);
 
   useEffect(() => {
     if (!incorrectPiece && !recentPiece) return undefined;
@@ -489,11 +458,11 @@ function PuzzleRoom() {
 
   return (
     <div
-      className={`puzzle-page${isLeavingPage ? " puzzle-page--leaving" : ""}`}
+      className="puzzle-page"
       style={{ "--puzzle-background": `url(${background})` }}
     >
-      <header className="puzzle-header">
-        {completed ? (
+      <header className="site-header">
+        {completed && (
           <button
             className="puzzle-header__back"
             type="button"
@@ -502,21 +471,17 @@ function PuzzleRoom() {
           >
             <span aria-hidden="true">&gt;</span>
           </button>
-        ) : (
-          <a className="puzzle-header__back" href={sitePath()} aria-label="Return to Artwork Collection">
-            <span aria-hidden="true">&gt;</span>
-          </a>
         )}
-        <a className="puzzle-header__logo" href={sitePath()} aria-label="Heli home">
+        <a className="site-header__logo" href={sitePath()} aria-label="Heli home">
           <img src={logo} alt="Heli" />
         </a>
-        <nav className="puzzle-header__nav" aria-label="Primary navigation">
+        <nav className="site-header__nav" aria-label="Primary navigation">
           <a href={sitePath("#gallery")}>Artwork Collection</a>
           <a href={sitePath("creating-process")}>Creating Process</a>
           <a href={sitePath("puzzle-room")} aria-current="page">Puzzle Room</a>
         </nav>
         <button
-          className="puzzle-header__menu"
+          className="site-header__menu"
           type="button"
           aria-label={isMenuOpen ? "Close navigation" : "Open navigation"}
           aria-controls="puzzle-mobile-navigation"

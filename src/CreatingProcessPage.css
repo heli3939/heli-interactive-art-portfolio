@@ -48,9 +48,6 @@
     animation-duration: 0.01ms;
   }
 
-  .process-mobile-projector {
-    animation-duration: 0.01ms;
-  }
 }
 
 .process-selector {
@@ -63,20 +60,6 @@
   aspect-ratio: 1;
   object-fit: contain;
   filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
-}
-
-.process-mobile-projector {
-  display: none;
-}
-
-@keyframes process-mobile-projector-switch {
-  from {
-    transform: translateY(18px);
-  }
-
-  to {
-    transform: translateY(0);
-  }
 }
 
 .process-stack {
@@ -184,7 +167,7 @@
 .process-viewer__prompt-window .window-frame__content {
   display: grid;
   place-items: center;
-  padding: 28px 24px 12px;
+  padding: 28px var(--textbox-padding-inline) 12px;
 }
 
 .process-viewer__prompt {
@@ -196,17 +179,44 @@
   text-shadow: 0 2px 3px rgb(255 255 255 / 80%);
 }
 
-.process-viewer__main {
+.process-viewer__title {
+  width: 100%;
+  margin: 0 5px 11px;
+  color: #6830ff;
+  font-family: VT323, monospace;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.process-viewer__stage {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  background: rgb(255 255 255 / 76%);
+  box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+}
+
+.process-viewer__size-reference {
   display: block;
   width: auto;
   max-width: 100%;
   height: auto;
   max-height: 398px;
-  margin: 0 auto;
-  background: rgb(255 255 255 / 76%);
-  box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.process-viewer__main {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   cursor: zoom-in;
-  transition: transform 220ms ease, box-shadow 220ms ease;
+  transition: transform 220ms ease;
 }
 
 .process-viewer__main:hover,
@@ -279,18 +289,25 @@
 
 @media (max-width: 1024px) {
   .process-layout {
+    --process-board-edge-space: clamp(10px, 2.4svh, 22px);
+    --mobile-projector-hidden-tail: min(71.6px, 11.2vw, 6.7svh);
+
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0;
     width: min(960px, calc(100% - 24px));
-    padding: 12px 0;
+    min-height: calc(100svh - 64px);
+    padding: 12px 0 var(--process-board-edge-space);
   }
 
   .process-selector {
     display: block;
     order: 3;
+    flex: none;
     width: min(100%, 640px);
+    margin-top: auto;
     margin-right: auto;
+    margin-bottom: auto;
     margin-left: auto;
   }
 
@@ -321,20 +338,19 @@
 
   .process-viewer {
     order: 1;
+    flex: 0 0 calc(min(60vw, 35svh) + clamp(58px, 12svh, 90px) + 81px);
     display: flex;
     flex-direction: column;
     align-items: center;
     width: min(100%, 640px);
+    height: calc(min(60vw, 35svh) + clamp(58px, 12svh, 90px) + 81px);
     min-height: 0;
     margin-right: auto;
     margin-left: auto;
     padding: 0;
   }
 
-  .process-viewer__main {
-    width: auto;
-    max-width: 100%;
-    height: auto;
+  .process-viewer__size-reference {
     max-height: min(60vw, 35svh);
   }
 
@@ -355,41 +371,37 @@
   }
 
   .process-viewer__prompt-window {
+    width: min(390px, 100%);
     height: 110px;
-    margin-top: 6px;
+    margin: 0 auto;
+  }
+
+  .process-viewer:not(.process-viewer--active) {
+    justify-content: center;
   }
 
   .process-mobile-projector {
     order: 2;
-    display: block;
-    width: min(320px, 50%, 30svh);
-    aspect-ratio: 1.93;
-    margin: 0 auto 8px;
-    overflow: hidden;
-    filter: drop-shadow(0 4px 4px rgb(0 0 0 / 25%));
-  }
-
-  .process-mobile-projector--on {
-    animation: process-mobile-projector-switch 380ms ease-out both;
-  }
-
-  .process-mobile-projector img {
-    display: block;
-    width: 100%;
-    height: auto;
-    transform: translateY(-21.6%);
+    flex: none;
+    margin:
+      0 auto
+      calc(var(--process-board-edge-space) - var(--mobile-projector-hidden-tail));
   }
 }
 
 @media (max-width: 600px) {
   .process-layout {
     width: calc(100% - 12px);
-    gap: 4px;
-    padding: 8px 0 10px;
+    padding: 8px 0 var(--process-board-edge-space);
   }
 
-  .process-viewer__main {
+  .process-viewer__size-reference {
     max-height: min(58vw, 34svh);
+  }
+
+  .process-viewer {
+    flex-basis: calc(min(58vw, 34svh) + clamp(54px, 10.5svh, 78px) + 76px);
+    height: calc(min(58vw, 34svh) + clamp(54px, 10.5svh, 78px) + 76px);
   }
 
   .process-thumbnails {
@@ -419,7 +431,9 @@
   }
 
   .process-mobile-projector {
-    margin: 0 auto;
+    margin:
+      0 auto
+      calc(var(--process-board-edge-space) - var(--mobile-projector-hidden-tail));
   }
 
   .process-stack {
@@ -438,7 +452,7 @@
 
   .process-viewer__prompt-window {
     height: 105px;
-    margin-top: 4px;
+    margin: 0 auto;
   }
 
   .process-viewer__prompt {

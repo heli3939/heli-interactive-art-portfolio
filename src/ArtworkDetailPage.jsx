@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import WindowFrame from "./components/WindowFrame";
 import ImageLightbox from "./components/ImageLightbox";
+import StandingProjector, { MobileProjector } from "./components/StandingProjector";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
 import projectorOff from "./assets/icons/projector_button_off.png";
 import projectorOn from "./assets/icons/projector_button_on.png";
-import standingProjectorOff from "./assets/icons/projector_off.png";
-import standingProjectorOn from "./assets/icons/projector_on.png";
-import mobileProjectorOn from "./assets/icons/projector_mobile_on.png";
 import "./ArtworkDetailPage.css";
 import { sitePath } from "./sitePaths.js";
 
@@ -114,7 +112,14 @@ function DetailProcessViewer({
 
   return (
     <section className="detail-process-viewer" aria-label={`Creating process for ${artwork.title}`} aria-live="polite">
+      <h2 className="detail-process-viewer__title">{artwork.title}</h2>
       <div className="detail-process-viewer__stage">
+        <img
+          className="detail-process-viewer__size-reference"
+          src={artwork.image}
+          alt=""
+          aria-hidden="true"
+        />
         <img
           className="detail-process-viewer__main"
           src={stages[stageIndex].image}
@@ -157,9 +162,6 @@ function DetailProcessViewer({
             aria-label={`Go to stage ${index + 1}`}
           />
         ))}
-      </div>
-      <div className="detail-mobile-projector" aria-hidden="true">
-        <img src={mobileProjectorOn} alt="" />
       </div>
     </section>
   );
@@ -259,18 +261,11 @@ function ArtworkDetailPage({ artworkId }) {
           aria-labelledby="detail-artwork-title"
         >
           {isProjectorActive ? (
-            <div className="detail-standing-projector" aria-hidden="true">
-              <img
-                className="detail-standing-projector__image"
-                src={isProjectorOn ? standingProjectorOn : standingProjectorOff}
-                alt=""
-              />
-              {projectorPhase === "inserting" && (
-                <div className="detail-standing-projector__artwork">
-                  <img src={artwork.image} alt="" />
-                </div>
-              )}
-            </div>
+            <StandingProjector
+              artwork={artwork}
+              phase={projectorPhase}
+              className="detail-standing-projector"
+            />
           ) : (
             <img
               className="detail-artwork__image"
@@ -302,25 +297,34 @@ function ArtworkDetailPage({ artworkId }) {
               setStageIndex(0);
               setProjectorPhase((phase) => {
                 if (phase !== "off") return "off";
-                return window.matchMedia("(max-width: 1024px)").matches ? "on" : "inserting";
+                return "inserting";
               });
             }}
           />
         </section>
 
-        {isProjectorOn ? (
-          <DetailProcessViewer
+        <div className={`detail-content-slot${isProjectorActive ? " detail-content-slot--projecting" : ""}`}>
+          {isProjectorOn ? (
+            <DetailProcessViewer
+              artwork={artwork}
+              stageIndex={stageIndex}
+              onStageChange={setStageIndex}
+              onPauseChange={setIsProcessPaused}
+              onImageOpen={setLightboxImage}
+            />
+          ) : projectorPhase === "off" ? (
+            <WindowFrame title="Description" className="detail-description">
+              <p>{description}</p>
+            </WindowFrame>
+          ) : <div className="detail-process-pending" aria-label="Artwork is entering the projector" />}
+        </div>
+        {isProjectorActive && (
+          <MobileProjector
             artwork={artwork}
-            stageIndex={stageIndex}
-            onStageChange={setStageIndex}
-            onPauseChange={setIsProcessPaused}
-            onImageOpen={setLightboxImage}
+            phase={projectorPhase}
+            className="detail-mobile-projector"
           />
-        ) : projectorPhase === "off" ? (
-          <WindowFrame title="Description" className="detail-description">
-            <p>{description}</p>
-          </WindowFrame>
-        ) : <div className="detail-process-pending" aria-label="Artwork is entering the projector" />}
+        )}
       </main>
       <ImageLightbox
         image={lightboxImage?.image}
