@@ -507,12 +507,15 @@ a.artwork-card:focus-visible .artwork-card__frame {
   }
 }
 
-@media (hover: none) and (pointer: coarse) {
-  .artwork-card-flight {
-    transition:
-      opacity 240ms ease,
-      transform 280ms cubic-bezier(0.22, 0.72, 0.2, 1);
-  }
+.gallery--touch-carousel .gallery__space {
+  perspective: none;
+}
+
+.gallery--touch-carousel .artwork-card-flight:not(.gallery-instruction) {
+  top: 50%;
+  left: 50%;
+  width: min(var(--card-width), 72vw);
+  transition: opacity 180ms ease;
 }
 
 @media (max-width: 600px) {
