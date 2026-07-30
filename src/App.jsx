@@ -148,9 +148,15 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         : minimumProgress;
     let progress = startingProgress;
     let animationFrame;
-    let previousTouchY = null;
+    let touchStartY = null;
+    let touchDeltaY = 0;
     const maximumProgress = 1 + (cards.length - 1) * stagger;
     const finalArtworkRevealProgress = (cards.length - 1) * stagger + 0.16;
+    const fullCardProgress = 1100 / 1620;
+    let touchArtworkIndex = Math.min(
+      cards.length - 1,
+      Math.max(0, Math.round((progress - fullCardProgress) / stagger)),
+    );
 
     const renderDepth = () => {
       animationFrame = undefined;
@@ -220,41 +226,53 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
 
     const handleTouchStart = (event) => {
       if (disabled || reducedMotion || event.touches.length !== 1) return;
-      previousTouchY = event.touches[0].clientY;
+      touchStartY = event.touches[0].clientY;
+      touchDeltaY = 0;
     };
 
     const handleTouchMove = (event) => {
       if (
         disabled
         || reducedMotion
-        || previousTouchY === null
+        || touchStartY === null
         || event.touches.length !== 1
       ) return;
 
       const currentTouchY = event.touches[0].clientY;
-      const deltaY = previousTouchY - currentTouchY;
-      previousTouchY = currentTouchY;
+      touchDeltaY = touchStartY - currentTouchY;
 
-      const movingForward = deltaY > 0;
-      const canMoveForward = progress < maximumProgress;
-      const canMoveBackward = progress > minimumProgress;
+      const movingForward = touchDeltaY > 0;
+      const canMoveForward = touchArtworkIndex < cards.length - 1;
+      const canMoveBackward = touchArtworkIndex > 1;
 
       if (
         (movingForward && canMoveForward)
         || (!movingForward && canMoveBackward)
       ) {
         event.preventDefault();
-        setIsInstructionVisible(false);
-        progress = Math.min(
-          maximumProgress,
-          Math.max(minimumProgress, progress + deltaY * 0.0016),
-        );
-        requestRender();
       }
     };
 
     const handleTouchEnd = () => {
-      previousTouchY = null;
+      if (touchStartY === null) return;
+
+      if (Math.abs(touchDeltaY) >= 24) {
+        if (touchDeltaY > 0 && touchArtworkIndex < cards.length - 1) {
+          touchArtworkIndex = Math.max(1, touchArtworkIndex + 1);
+        } else if (touchDeltaY < 0 && touchArtworkIndex > 1) {
+          touchArtworkIndex -= 1;
+        }
+
+        setIsInstructionVisible(false);
+        progress = Math.min(
+          maximumProgress,
+          Math.max(minimumProgress, touchArtworkIndex * stagger + fullCardProgress),
+        );
+        requestRender();
+      }
+
+      touchStartY = null;
+      touchDeltaY = 0;
     };
 
     const resetGallery = () => {
@@ -321,7 +339,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         >
           <WindowFrame title="*Hint*" className="gallery-instruction__window">
             <p>
-              Scroll/Swipe to explore my artworks. Click an artwork to
+              Scroll or swipe to explore my artworks. Click an artwork to
               view its details.
             </p>
           </WindowFrame>
@@ -335,7 +353,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         aria-hidden="true"
       >
         <span className="gallery-scroll-cue__arrow">↕</span>
-        <span>Scroll/Swipe to explore</span>
+        <span>Scroll or swipe to explore</span>
       </div>
     </section>
   );

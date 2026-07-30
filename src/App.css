@@ -507,6 +507,14 @@ a.artwork-card:focus-visible .artwork-card__frame {
   }
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .artwork-card-flight {
+    transition:
+      opacity 240ms ease,
+      transform 280ms cubic-bezier(0.22, 0.72, 0.2, 1);
+  }
+}
+
 @media (max-width: 600px) {
   .gallery {
     padding-inline: 22px;
