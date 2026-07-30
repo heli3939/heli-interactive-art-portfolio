@@ -409,11 +409,17 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         ))}
       </div>
       <div
-        className={`gallery-scroll-cue${hasMoreArtworks ? "" : " gallery-scroll-cue--hidden"}`}
+        className={`gallery-scroll-cue${hasMoreArtworks ? "" : " gallery-scroll-cue--complete"}`}
         aria-hidden="true"
       >
-        <span className="gallery-scroll-cue__arrow">↕</span>
-        <span>Scroll or swipe to explore</span>
+        <span className="gallery-scroll-cue__arrow">
+          {hasMoreArtworks ? "↕" : "✦"}
+        </span>
+        <span>
+          {hasMoreArtworks
+            ? "Scroll or swipe to explore"
+            : "Check out other sections in the menu"}
+        </span>
       </div>
     </section>
   );

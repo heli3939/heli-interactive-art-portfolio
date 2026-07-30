@@ -358,9 +358,15 @@
   text-shadow: 0 1px 0 rgb(255 255 255 / 70%);
 }
 
-.gallery-scroll-cue--hidden {
-  visibility: hidden;
-  opacity: 0;
+.gallery-scroll-cue--complete {
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  justify-content: center;
+  text-align: center;
+}
+
+.gallery-scroll-cue--complete .gallery-scroll-cue__arrow {
+  animation: none;
 }
 
 .gallery-scroll-cue__arrow {
