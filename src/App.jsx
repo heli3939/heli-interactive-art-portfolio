@@ -328,22 +328,24 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       ref={galleryRef}
     >
       <div className="gallery__space">
-        <div
-          className={`artwork-card-flight gallery-instruction${isInstructionVisible ? "" : " gallery-instruction--hidden"}`}
-          style={{
-            "--card-x": "50%",
-            "--card-y": "52%",
-            "--card-width": "25rem",
-            zIndex: 30,
-          }}
-        >
-          <WindowFrame title="*Hint*" className="gallery-instruction__window">
-            <p>
-              Scroll or swipe to explore my artworks. Click an artwork to
-              view its details.
-            </p>
-          </WindowFrame>
-        </div>
+        {isInstructionVisible && (
+          <div
+            className="artwork-card-flight gallery-instruction"
+            style={{
+              "--card-x": "50%",
+              "--card-y": "52%",
+              "--card-width": "25rem",
+              zIndex: 30,
+            }}
+          >
+            <WindowFrame title="*Hint*" className="gallery-instruction__window">
+              <p>
+                Scroll or swipe to explore my artworks. Click an artwork to
+                view its details.
+              </p>
+            </WindowFrame>
+          </div>
+        )}
         {galleryArtworks.map((artwork, index) => (
           <ArtworkCard artwork={artwork} index={index} key={artwork.id} />
         ))}
