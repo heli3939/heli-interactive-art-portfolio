@@ -4,6 +4,12 @@
   background: #c6bdff var(--puzzle-background) center / cover fixed;
 }
 
+.puzzle-page.is-incomplete {
+  height: 100svh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 .puzzle-header {
   position: relative;
   z-index: 100;
@@ -383,6 +389,11 @@
   box-shadow: 0 5px 6px rgb(0 0 0 / 18%);
 }
 
+.puzzle-pieces-area:has(.puzzle-piece.is-dragging) {
+  z-index: 80;
+  overflow: visible;
+}
+
 .puzzle-room:has(.puzzle-board.is-complete) {
   display: block;
   width: min(1180px, calc(100% - 48px));
@@ -407,6 +418,7 @@
   background: transparent;
   cursor: grab;
   touch-action: none;
+  -webkit-touch-callout: none;
   user-select: none;
   transform: translate(-50%, -50%);
   animation: piece-float var(--float-duration) ease-in-out var(--float-delay) infinite alternate;

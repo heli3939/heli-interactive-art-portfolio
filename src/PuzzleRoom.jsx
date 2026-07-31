@@ -249,20 +249,6 @@ function PuzzleRoom() {
     return () => window.clearTimeout(timer);
   }, [completed]);
 
-  const cellFromPoint = useCallback((clientX, clientY, tolerance = 16) => {
-    const board = boardRef.current?.getBoundingClientRect();
-    if (!board) return null;
-    if (
-      clientX < board.left - tolerance || clientX > board.right + tolerance
-      || clientY < board.top - tolerance || clientY > board.bottom + tolerance
-    ) return null;
-
-    const x = Math.min(board.width - 1, Math.max(0, clientX - board.left));
-    const y = Math.min(board.height - 1, Math.max(0, clientY - board.top));
-    return Math.floor(y / (board.height / 3)) * 3
-      + Math.floor(x / (board.width / 3));
-  }, []);
-
   const attemptPlacement = useCallback((pieceId, cellIndex) => {
     const piece = pieces.find((item) => item.id === pieceId);
     const isAvailable = !placed.has(pieceId)
@@ -292,9 +278,9 @@ function PuzzleRoom() {
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
     const alpha = new Uint8Array(canvas.width * canvas.height);
     let opaqueLeft = canvas.width;
-    let opaqueRight = 0;
+    let opaqueRight = -1;
     let opaqueTop = canvas.height;
-    let opaqueBottom = 0;
+    let opaqueBottom = -1;
     for (let index = 0; index < alpha.length; index += 1) {
       alpha[index] = pixels[index * 4 + 3];
       if (alpha[index] > 24) {
@@ -306,7 +292,7 @@ function PuzzleRoom() {
         opaqueBottom = Math.max(opaqueBottom, y);
       }
     }
-    const hasOpaquePixels = opaqueLeft <= opaqueRight && opaqueTop <= opaqueBottom;
+    const hasOpaquePixels = opaqueRight >= opaqueLeft && opaqueBottom >= opaqueTop;
     alphaMap = {
       alpha,
       width: canvas.width,
@@ -317,6 +303,10 @@ function PuzzleRoom() {
       opaqueCenterY: hasOpaquePixels
         ? ((opaqueTop + opaqueBottom) / 2 + 0.5) / canvas.height
         : 0.5,
+      opaqueLeft: hasOpaquePixels ? opaqueLeft / canvas.width : 0,
+      opaqueRight: hasOpaquePixels ? (opaqueRight + 1) / canvas.width : 1,
+      opaqueTop: hasOpaquePixels ? opaqueTop / canvas.height : 0,
+      opaqueBottom: hasOpaquePixels ? (opaqueBottom + 1) / canvas.height : 1,
     };
     alphaCanvasRef.current.set(image, alphaMap);
     return alphaMap;
@@ -362,10 +352,52 @@ function PuzzleRoom() {
     ));
   };
 
-  const getDraggedPiecePoint = (dragState) => ({
-    x: dragState.x + dragState.width * dragState.anchorRatioX,
-    y: dragState.y + dragState.height * dragState.anchorRatioY,
-  });
+  const cellFromDraggedPiece = (dragState) => {
+    const board = boardRef.current;
+    if (!board) return null;
+    const boardBounds = board.getBoundingClientRect();
+    const opaqueBounds = {
+      left: dragState.x + dragState.width * dragState.opaqueLeft,
+      right: dragState.x + dragState.width * dragState.opaqueRight,
+      top: dragState.y + dragState.height * dragState.opaqueTop,
+      bottom: dragState.y + dragState.height * dragState.opaqueBottom,
+    };
+    const opaqueArea = Math.max(
+      1,
+      (opaqueBounds.right - opaqueBounds.left)
+        * (opaqueBounds.bottom - opaqueBounds.top),
+    );
+    const cellWidth = boardBounds.width / 3;
+    const cellHeight = boardBounds.height / 3;
+    let strongestCell = null;
+    let strongestOverlap = 0;
+
+    for (let index = 0; index < 9; index += 1) {
+      const column = index % 3;
+      const row = Math.floor(index / 3);
+      const cellLeft = boardBounds.left + column * cellWidth;
+      const cellRight = cellLeft + cellWidth;
+      const cellTop = boardBounds.top + row * cellHeight;
+      const cellBottom = cellTop + cellHeight;
+      const overlapWidth = Math.max(
+        0,
+        Math.min(opaqueBounds.right, cellRight)
+          - Math.max(opaqueBounds.left, cellLeft),
+      );
+      const overlapHeight = Math.max(
+        0,
+        Math.min(opaqueBounds.bottom, cellBottom)
+          - Math.max(opaqueBounds.top, cellTop),
+      );
+      const overlap = overlapWidth * overlapHeight / opaqueArea;
+      if (overlap > strongestOverlap) {
+        strongestOverlap = overlap;
+        strongestCell = index;
+      }
+    }
+
+    return strongestOverlap >= 0.3 ? strongestCell : null;
+  };
 
   const handlePointerDown = (event, piece) => {
     if (placed.has(piece.id) || completed) return;
@@ -373,24 +405,30 @@ function PuzzleRoom() {
     if (!visibleTarget) return;
     const activePiece = visibleTarget.piece;
     const bounds = visibleTarget.element.getBoundingClientRect();
+    const piecesArea = visibleTarget.element.parentElement;
+    const piecesAreaBounds = piecesArea.getBoundingClientRect();
     const alphaMap = getAlphaMap(visibleTarget.element.querySelector("img"));
     event.preventDefault();
     visibleTarget.element.setPointerCapture(event.pointerId);
+    visibleTarget.element.blur();
     const nextDrag = {
       id: activePiece.id,
       x: bounds.left,
       y: bounds.top,
       width: bounds.width,
       height: bounds.height,
+      containerLeft: piecesAreaBounds.left + piecesArea.clientLeft,
+      containerTop: piecesAreaBounds.top + piecesArea.clientTop,
       anchorRatioX: alphaMap?.opaqueCenterX ?? 0.5,
       anchorRatioY: alphaMap?.opaqueCenterY ?? 0.5,
+      opaqueLeft: alphaMap?.opaqueLeft ?? 0,
+      opaqueRight: alphaMap?.opaqueRight ?? 1,
+      opaqueTop: alphaMap?.opaqueTop ?? 0,
+      opaqueBottom: alphaMap?.opaqueBottom ?? 1,
       offsetX: event.clientX - bounds.left,
       offsetY: event.clientY - bounds.top,
     };
-    dragRef.current = {
-      ...nextDrag,
-      pointerId: event.pointerId,
-    };
+    dragRef.current = { ...nextDrag, pointerId: event.pointerId };
     setDrag(nextDrag);
     setSelectedPiece(activePiece.id);
     setHoveredPiece(null);
@@ -406,15 +444,17 @@ function PuzzleRoom() {
     };
     dragRef.current = nextDrag;
     setDrag(nextDrag);
-    const piecePoint = getDraggedPiecePoint(nextDrag);
-    setHighlighted(cellFromPoint(piecePoint.x, piecePoint.y));
+    setHighlighted(cellFromDraggedPiece(nextDrag));
   };
 
   const handlePointerUp = (event) => {
     const active = dragRef.current;
     if (!active || active.pointerId !== event.pointerId) return;
-    const piecePoint = getDraggedPiecePoint(active);
-    const droppedCell = cellFromPoint(piecePoint.x, piecePoint.y);
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    event.currentTarget.blur();
+    const droppedCell = cellFromDraggedPiece(active);
     if (droppedCell !== null) {
       attemptPlacement(active.id, droppedCell);
     }
@@ -637,11 +677,11 @@ function PuzzleRoom() {
                 aria-label={`Puzzle piece ${piece.number}. Press Enter or Space to select it.`}
                 aria-pressed={selectedPiece === piece.id}
                 style={isDragging ? {
-                  left: `${drag.x}px`,
-                  top: `${drag.y}px`,
+                  left: `${drag.x - drag.containerLeft}px`,
+                  top: `${drag.y - drag.containerTop}px`,
                   width: `${drag.width}px`,
                   height: `${drag.height}px`,
-                  position: "fixed",
+                  position: "absolute",
                   "--piece-shape": `url("${piece.image}")`,
                   "--float-duration": `${piece.duration}s`,
                   "--float-delay": `${piece.delay}s`,
