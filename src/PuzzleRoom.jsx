@@ -291,10 +291,33 @@ function PuzzleRoom() {
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
     const alpha = new Uint8Array(canvas.width * canvas.height);
+    let opaqueLeft = canvas.width;
+    let opaqueRight = 0;
+    let opaqueTop = canvas.height;
+    let opaqueBottom = 0;
     for (let index = 0; index < alpha.length; index += 1) {
       alpha[index] = pixels[index * 4 + 3];
+      if (alpha[index] > 24) {
+        const x = index % canvas.width;
+        const y = Math.floor(index / canvas.width);
+        opaqueLeft = Math.min(opaqueLeft, x);
+        opaqueRight = Math.max(opaqueRight, x);
+        opaqueTop = Math.min(opaqueTop, y);
+        opaqueBottom = Math.max(opaqueBottom, y);
+      }
     }
-    alphaMap = { alpha, width: canvas.width, height: canvas.height };
+    const hasOpaquePixels = opaqueLeft <= opaqueRight && opaqueTop <= opaqueBottom;
+    alphaMap = {
+      alpha,
+      width: canvas.width,
+      height: canvas.height,
+      opaqueCenterX: hasOpaquePixels
+        ? ((opaqueLeft + opaqueRight) / 2 + 0.5) / canvas.width
+        : 0.5,
+      opaqueCenterY: hasOpaquePixels
+        ? ((opaqueTop + opaqueBottom) / 2 + 0.5) / canvas.height
+        : 0.5,
+    };
     alphaCanvasRef.current.set(image, alphaMap);
     return alphaMap;
   };
@@ -339,43 +362,59 @@ function PuzzleRoom() {
     ));
   };
 
+  const getDraggedPiecePoint = (dragState) => ({
+    x: dragState.x + dragState.width * dragState.anchorRatioX,
+    y: dragState.y + dragState.height * dragState.anchorRatioY,
+  });
+
   const handlePointerDown = (event, piece) => {
     if (placed.has(piece.id) || completed) return;
     const visibleTarget = visiblePieceAtPoint(event);
     if (!visibleTarget) return;
     const activePiece = visibleTarget.piece;
     const bounds = visibleTarget.element.getBoundingClientRect();
+    const alphaMap = getAlphaMap(visibleTarget.element.querySelector("img"));
     event.preventDefault();
     visibleTarget.element.setPointerCapture(event.pointerId);
-    dragRef.current = { id: activePiece.id, pointerId: event.pointerId };
-    setDrag({
+    const nextDrag = {
       id: activePiece.id,
       x: bounds.left,
       y: bounds.top,
       width: bounds.width,
       height: bounds.height,
+      anchorRatioX: alphaMap?.opaqueCenterX ?? 0.5,
+      anchorRatioY: alphaMap?.opaqueCenterY ?? 0.5,
       offsetX: event.clientX - bounds.left,
       offsetY: event.clientY - bounds.top,
-    });
+    };
+    dragRef.current = {
+      ...nextDrag,
+      pointerId: event.pointerId,
+    };
+    setDrag(nextDrag);
     setSelectedPiece(activePiece.id);
     setHoveredPiece(null);
   };
 
   const handlePointerMove = (event) => {
-    if (!dragRef.current || dragRef.current.pointerId !== event.pointerId) return;
-    setDrag((current) => {
-      if (!current) return current;
-      const nextX = event.clientX - current.offsetX;
-      const nextY = event.clientY - current.offsetY;
-      return { ...current, x: nextX, y: nextY };
-    });
-    setHighlighted(cellFromPoint(event.clientX, event.clientY));
+    const current = dragRef.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const nextDrag = {
+      ...current,
+      x: event.clientX - current.offsetX,
+      y: event.clientY - current.offsetY,
+    };
+    dragRef.current = nextDrag;
+    setDrag(nextDrag);
+    const piecePoint = getDraggedPiecePoint(nextDrag);
+    setHighlighted(cellFromPoint(piecePoint.x, piecePoint.y));
   };
 
   const handlePointerUp = (event) => {
     const active = dragRef.current;
     if (!active || active.pointerId !== event.pointerId) return;
-    const droppedCell = cellFromPoint(event.clientX, event.clientY);
+    const piecePoint = getDraggedPiecePoint(active);
+    const droppedCell = cellFromPoint(piecePoint.x, piecePoint.y);
     if (droppedCell !== null) {
       attemptPlacement(active.id, droppedCell);
     }
