@@ -988,9 +988,8 @@
   }
 
   .puzzle-room.is-incomplete {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(180px, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: clamp(8px, 1.5svh, 14px);
     height: calc(100svh - 64px);
     min-height: 0;
@@ -999,6 +998,7 @@
   }
 
   .puzzle-room.is-incomplete .puzzle-board-column {
+    flex: 0 0 auto;
     width: 100%;
     min-height: 0;
   }
@@ -1012,9 +1012,12 @@
   }
 
   .puzzle-room.is-incomplete .puzzle-status {
-    min-height: 58px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 74px;
     margin-top: 4px;
-    padding: 0 12px;
+    padding: 0 12px 10px;
   }
 
   .puzzle-room.is-incomplete .puzzle-status p {
@@ -1029,6 +1032,7 @@
   }
 
   .puzzle-room.is-incomplete .puzzle-pieces-area {
+    flex: 1 1 180px;
     align-self: stretch;
     width: min(560px, calc(100vw - 40px));
     height: auto;
@@ -1054,9 +1058,8 @@
   }
 
   .puzzle-room.is-incomplete {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr);
+    display: flex;
+    flex-direction: row;
     align-items: start;
     gap: clamp(14px, 2.5vw, 28px);
     width: 100%;
@@ -1067,6 +1070,7 @@
   }
 
   .puzzle-room.is-incomplete .puzzle-board-column {
+    flex: 1 1 0;
     align-self: start;
     width: 100%;
     min-height: 0;
@@ -1082,9 +1086,12 @@
   }
 
   .puzzle-room.is-incomplete .puzzle-status {
-    min-height: 58px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 72px;
     margin-top: 3px;
-    padding: 0 10px;
+    padding: 0 10px 9px;
   }
 
   .puzzle-room.is-incomplete .puzzle-status p {
@@ -1099,6 +1106,7 @@
   }
 
   .puzzle-room.is-incomplete .puzzle-pieces-area {
+    flex: 1 1 0;
     align-self: stretch;
     width: 100%;
     height: 100%;
