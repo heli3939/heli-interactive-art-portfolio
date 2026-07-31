@@ -407,7 +407,7 @@ function PuzzleRoom() {
 
   return (
     <div
-      className="puzzle-page"
+      className={`puzzle-page ${completed ? "is-complete" : "is-incomplete"}`}
       style={{ "--puzzle-background": `url(${background})` }}
     >
       <header className="site-header">
@@ -470,7 +470,7 @@ function PuzzleRoom() {
       )}
 
       <main
-        className="puzzle-room"
+        className={`puzzle-room ${completed ? "is-complete" : "is-incomplete"}`}
         ref={roomRef}
         inert={isMenuOpen || showUnlockPrompt ? true : undefined}
       >
