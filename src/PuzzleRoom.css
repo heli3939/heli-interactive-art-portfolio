@@ -475,7 +475,9 @@
 .puzzle-piece.is-dragging {
   z-index: 999;
   cursor: grabbing;
-  animation-play-state: paused;
+  animation: none;
+  translate: 0;
+  rotate: 0deg;
   transform: none;
 }
 

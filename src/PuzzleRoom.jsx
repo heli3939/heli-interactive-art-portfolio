@@ -345,12 +345,15 @@ function PuzzleRoom() {
     if (!visibleTarget) return;
     const activePiece = visibleTarget.piece;
     const bounds = visibleTarget.element.getBoundingClientRect();
-    event.currentTarget.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    visibleTarget.element.setPointerCapture(event.pointerId);
     dragRef.current = { id: activePiece.id, pointerId: event.pointerId };
     setDrag({
       id: activePiece.id,
       x: bounds.left,
       y: bounds.top,
+      width: bounds.width,
+      height: bounds.height,
       offsetX: event.clientX - bounds.left,
       offsetY: event.clientY - bounds.top,
     });
@@ -597,6 +600,8 @@ function PuzzleRoom() {
                 style={isDragging ? {
                   left: `${drag.x}px`,
                   top: `${drag.y}px`,
+                  width: `${drag.width}px`,
+                  height: `${drag.height}px`,
                   position: "fixed",
                   "--piece-shape": `url("${piece.image}")`,
                   "--float-duration": `${piece.duration}s`,
