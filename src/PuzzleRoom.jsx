@@ -125,6 +125,7 @@ function ReferenceAnnotation({ reference, onClose }) {
       className={`reference-note reference-note--${reference.position}`}
       title={`REFERENCE ${String(reference.id).padStart(2, "0")}`}
       onClose={onClose}
+      showCloseButton
       onClick={(event) => event.stopPropagation()}
       style={{
         "--reference-row": row,
