@@ -113,7 +113,7 @@ Hi! I'm heli, a Melbourne-based digital artist who loves drawing cute character 
 Alongside VOCALOID, I also create fan art inspired by anime, games and internet culture.
         </p>
         <p>
-Through this portfolio, I hope you can connect with both my artwork and the creative world inspring me. Scroll down to start exploration!
+Through this portfolio, I hope you will find more about both my artwork and the creative world inspring me. Choose a section to start your exploration!
         </p>
       </div>
     </>
@@ -443,8 +443,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
           >
             <WindowFrame title="*Hint*" className="gallery-instruction__window">
               <p>
-                Scroll or swipe to explore my artworks. Click an artwork to
-                view its details.
+                Scroll or swipe to explore my artworks.
               </p>
             </WindowFrame>
           </div>
