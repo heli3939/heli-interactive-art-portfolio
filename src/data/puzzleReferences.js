@@ -18,7 +18,7 @@ const puzzleReferences = [
     artist: "Iori Kanzaki",
     albumCover: albumCover1,
     musicUrl: "https://music.youtube.com/playlist?list=PLnRfp4f4lw2CfHnmWMjCzoWiUuVj3Whfc&si=ujodmAxA2rhi9yNQ",
-    description: "An emotionally raw, lyric-heavy Vocaloid album that turns fear of death, loneliness and the question of how to keep living into music. In my illustration, I used wings, glitch effects, muted textures and grid-like frames to reflect its dark, fragmented aesthetic.",
+    description: "An emotionally raw, lyric-heavy Vocaloid album that turns fear towards death, loneliness into music. In my illustration, I used wings, glitch effects, muted textures and grid-like frames to reflect its dark, fragmented aesthetic.",
     position: "top-left",
   },
   {
@@ -27,7 +27,7 @@ const puzzleReferences = [
     artist: "Chouchou-P",
     albumCover: albumCover2,
     musicUrl: "https://music.apple.com/jp/album/end-of-the-world-feat-%E5%88%9D%E9%9F%B3%E3%83%9F%E3%82%AF/980246426?l=en-US",
-    description: "A dramatic Vocaloid piano-rock album, mixing beautiful piano melodies with powerful rock arrangements and emotional, often bittersweet songwriting. In my illustration, I drew inspiration from the cover itself, incorporate visual elements like butterfly, shooting star, telescope from its cover art.",
+    description: "A dramatic Vocaloid piano-rock album, mixing beautiful piano melody with powerful rock arrangement and bittersweet songwriting. In my illustration, I drew inspiration from the cover itself, incorporate visual elements like butterfly, shooting star, night sky, astronomical telescope from its cover art.",
     position: "below-piece-2",
   },
   {
@@ -36,7 +36,7 @@ const puzzleReferences = [
     artist: "Shannon",
     albumCover: albumCover3,
     musicUrl: "https://open.spotify.com/album/4XzJFlDxKdMGbrVdSnhWIQ?si=JM5F78MeRu2D-Z7squx3nA",
-    description: "A surreal Vocaloid album where music, illustration, and animation build an unfamiliar world filled with death, creatures, lost civilizations, and mysterious symbols. In my illustration, I incorporated visual elements from MVs of album tracks, such as dinosaur skeletons, telegraph poles, and bubbles.",
+    description: "A surreal Vocaloid album with Shannon's unique worldbuild, filled with death, prehistoric creatures, and lost civilizations. In my illustration, I incorporated visual elements from MVs of album tracks, such as dinosaur skeletons, telegraph poles, and bubbles.",
     position: "top-right",
   },
   {
@@ -45,7 +45,7 @@ const puzzleReferences = [
     artist: "harumakigohan",
     albumCover: albumCover4,
     musicUrl: "https://open.spotify.com/album/5G5D0OSg5puTVZMg4nVocH?si=Tn78J35lQpG_4kbVPI68BA",
-    description: "A dreamy, melancholic Vocaloid album centered on the theme of dreams, blending soft, emotional electronic melodies with layered synth textures and delicate vocal tuning to create a drifting, surreal atmosphere. In my illustration, I incorporated the album cover’s blue-pink color palette along with elements such as clouds, fireworks, and the moon.",
+    description: "A dreamy, melancholic Vocaloid album centered about dreams, blending soft, emotional electronic melodies with layered synth textures and delicate vocal tuning to create a drifting, surreal atmosphere. In my illustration, I incorporated the album cover's blue-pink color palette along with elements such as clouds, fireworks, and the moon.",
     position: "left",
   },
   {
@@ -54,7 +54,7 @@ const puzzleReferences = [
     artist: "ryo (Supercell)",
     albumCover: albumCover5,
     musicUrl: "https://music.apple.com/us/album/supercell-feat-hatsune-miku/440374074",
-    description: "A hugely influential early Hatsune Miku album full of catchy pop-rock melodies and emotionally direct songs that helped define the sound of early online Vocaloid culture. As the central image, I incorporated elements from its well-known tracks, such as rainbow-coloured keys, a black-cyan megaphone, and tears, to reference songs on the album.",
+    description: "A catchy pop-rock VOCALOID album, with many hit songs that helped define the sound of early online Vocaloid culture. As the central image to indicate its influence, I incorporated elements from its well-known tracks, such as rainbow-coloured keys, black-cyan megaphone, and tears.",
     position: "below-piece-5",
   },
   {
@@ -63,7 +63,7 @@ const puzzleReferences = [
     artist: "*Luna",
     albumCover: albumCover6,
     musicUrl: "https://open.spotify.com/album/198KI39Z11DRHFoFqbkYb2?si=hHJgT5JGQHKQD8RWjTT0zw",
-    description: "A bright yet wistful Vocaloid pop album capturing the many shades of summer—festivals, memories, farewells, and the feeling of a season slipping away too quickly. I incorporated elements from its cover, such as a torii gate, clouds, and reflections on the water’s surface.",
+    description: "A bright yet wistful Vocaloid pop album captures the many shades of summer—festivals, memories, farewells, and the feeling of a season slipping away too quickly. I incorporated elements from its cover, such as a torii gate, clouds, and reflections on the water’s surface.",
     position: "right",
   },
   {
@@ -72,8 +72,7 @@ const puzzleReferences = [
     artist: "n-buna",
     albumCover: albumCover7,
     musicUrl: "https://open.spotify.com/album/5fgdRwwC6kohkB1WMT8QMR?si=tTECiiDSRpmaH_s-S6wsfw",
-    description: "A melancholic, guitar-led Vocaloid album that feels like travelling through the end of summer, filled with vivid scenery, memories and a sense of things coming to an end. It’s my favourite album, so I referenced both the cover, like the fireworks and train railings, and visuals from the songs, including night skies, lanterns, sunflowers, road signs and crayon-style backgrounds.",
-    position: "bottom-left",
+    description: "A melancholic, J-rock Vocaloid album that feels like travelling through the end of summer. Thoughtful yet depressing lyrics and bright yet emotional melodies together depict vivid scenery, memories and a sense of things coming to an end and fall apart. It's my favourite album, so I referenced both the cover, like the fireworks and train railings, and visuals from the songs, including night skies, lanterns, sunflowers, road signs and crayon-style backgrounds.",    position: "bottom-left",
   },
   {
     id: 8,
@@ -81,8 +80,7 @@ const puzzleReferences = [
     artist: "wowaka",
     albumCover: albumCover8,
     musicUrl: "https://music.youtube.com/playlist?list=PLX83LnszEUuk0QfeT_RCHVoN1FaiD4F8J&si=mAiSoO2s5CuU6J2f",
-    description: "A relentless, high-energy Vocaloid rock album packed with rapid melodies, dense rhythms and Miku’s distinctive fast vocals, carrying an anxious and emotionally restless intensity. In my illustration, I referenced wowaka’s signature visual style through bold lines, geometric shapes and minimalism, as well as the characters’ costume designs from the songs in the game.",
-    position: "above-piece-8",
+    description: "A relentless, high-energy math rock VOCALOID album packed with rapid melodies, dense rhythms and Miku's distinctive fast and powerful vocals, carrying an anxious and emotionally restless intensity. In my illustration, I referenced wowaka's signature visual style through bold lines, geometric shapes and minimalism, as well as the characters’ costume designs from the songs in the game.",    position: "above-piece-8",
   },
   {
     id: 9,
@@ -90,7 +88,7 @@ const puzzleReferences = [
     artist: "doriko",
     albumCover: albumCover9,
     musicUrl: "https://music.apple.com/jp/album/nostalgia/908693953",
-    description: "A story-focused Miku concept album, almost like a collection of period short stories, with a nostalgic, romantic and slightly theatrical atmosphere. In my illustration, I referenced elements from its cover art, such as the clock, compass, star trails and paper plane, and used a monochrome style to echo its visual mood.",
+    description: "A story-focused Miku concept album, like a collection of period short stories, with a nostalgic, romantic and theatrical atmosphere. In my illustration, I referenced elements from its cover art, such as the clock, compass, star trails and paper plane, and used a monochrome style to echo its visual mood.",
     position: "bottom-right",
   },
 ];
