@@ -61,7 +61,7 @@ function DetailHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
             aria-labelledby="detail-mobile-nav-heading"
           >
             <p className="mobile-nav__heading" id="detail-mobile-nav-heading">
-              Menu
+              MENU
             </p>
             <nav id="detail-mobile-navigation" aria-label="Mobile navigation">
               <a href={sitePath("#gallery")}>Artwork Collection</a>

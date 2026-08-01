@@ -703,10 +703,14 @@ a.artwork-card:focus-visible .artwork-card__frame {
     padding-bottom: 12px;
     color: #b8fffb;
     font-family: Bitcount, monospace;
-    font-size: clamp(21px, 6vw, 30px);
+    font-size: clamp(25px, 10vw, 34px);
     font-weight: 400;
     line-height: normal;
-    text-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+    text-shadow: 
+    -1px -1px 0 #39c5bb,  
+     1px -1px 0 #39c5bb,
+    -1px  1px 0 #39c5bb,
+     1px  1px 0 #39c5bb;
   }
 
   .mobile-nav a {

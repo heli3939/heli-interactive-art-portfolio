@@ -563,7 +563,7 @@ function PuzzleRoom() {
             aria-labelledby="puzzle-mobile-nav-heading"
           >
             <p className="mobile-nav__heading" id="puzzle-mobile-nav-heading">
-              Navigation
+              MENU
             </p>
             <nav id="puzzle-mobile-navigation" aria-label="Mobile navigation">
               <a href={sitePath("#gallery")}>Artwork Collection</a>

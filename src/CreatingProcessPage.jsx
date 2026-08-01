@@ -39,7 +39,7 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         <>
           <button className="mobile-nav-backdrop" type="button" aria-label="Close navigation" onClick={onMenuClose} />
           <aside className="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation">
-            <p className="mobile-nav__heading">Menu</p>
+            <p className="mobile-nav__heading">MENU</p>
             <nav>
               <a href={sitePath("#gallery")}>Artwork Collection</a>
               <a href={sitePath("creating-process")} aria-current="page" onClick={onMenuClose}>Creating Process</a>

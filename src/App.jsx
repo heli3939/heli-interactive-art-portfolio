@@ -593,7 +593,7 @@ function App() {
             aria-labelledby="mobile-nav-heading"
           >
             <p className="mobile-nav__heading" id="mobile-nav-heading">
-              Menu
+              MENU
             </p>
             <nav id="mobile-navigation" aria-label="Mobile navigation">
               <a
