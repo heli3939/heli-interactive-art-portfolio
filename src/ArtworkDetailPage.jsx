@@ -5,6 +5,7 @@ import StandingProjector, { MobileProjector } from "./components/StandingProject
 import ProcessSequence from "./components/ProcessSequence";
 import useTimedProcessStage from "./components/useTimedProcessStage";
 import processStagesFor from "./components/processStages";
+import preloadProcessStages from "./components/preloadProcessStages";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
@@ -160,14 +161,40 @@ function ArtworkDetailPage({ artworkId }) {
   }, [isMenuOpen]);
 
   useEffect(() => {
-    if (projectorPhase !== "inserting") return undefined;
+    if (projectorPhase !== "inserting" || !artwork) return undefined;
+    let cancelled = false;
+    let timer;
+    const insertionAnimation = new Promise((resolve) => {
+      timer = window.setTimeout(resolve, 720);
+    });
 
-    const timer = window.setTimeout(() => {
-      setProjectorPhase("on");
-    }, 720);
+    Promise.all([
+      insertionAnimation,
+      preloadProcessStages(artwork, "high"),
+    ]).then(() => {
+      if (!cancelled) setProjectorPhase("on");
+    });
 
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [artwork, projectorPhase]);
+
+  useEffect(() => {
+    if (!artwork?.hasProcess) return undefined;
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(
+        () => preloadProcessStages(artwork),
+        { timeout: 1200 },
+      );
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = window.setTimeout(() => preloadProcessStages(artwork), 300);
     return () => window.clearTimeout(timer);
-  }, [projectorPhase]);
+  }, [artwork]);
 
   useTimedProcessStage({
     enabled: isProjectorOn,
@@ -256,6 +283,7 @@ function ArtworkDetailPage({ artworkId }) {
             artwork={artwork}
             isOn={isProjectorOn}
             onToggle={() => {
+              if (!isProjectorActive) preloadProcessStages(artwork, "high");
               setStageIndex(0);
               setProjectorPhase((phase) => {
                 if (phase !== "off") return "off";

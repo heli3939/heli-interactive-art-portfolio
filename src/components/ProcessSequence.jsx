@@ -35,12 +35,15 @@ export default function ProcessSequence({
           className={classes.sizeReference}
           src={stages.at(-1).image}
           alt=""
+          decoding="async"
           aria-hidden="true"
         />
         <img
           className={classes.main}
           src={stages[stageIndex].image}
           alt={stages[stageIndex].alt}
+          decoding="async"
+          fetchPriority="high"
           tabIndex="0"
           onMouseEnter={() => onPauseChange(true)}
           onMouseLeave={() => onPauseChange(false)}
@@ -69,7 +72,7 @@ export default function ProcessSequence({
             aria-label={`View stage ${index + 1} of ${title}`}
             aria-current={index === stageIndex ? "step" : undefined}
           >
-            <img src={stage.image} alt="" />
+            <img src={stage.image} alt="" decoding="async" />
           </button>
         ))}
       </div>

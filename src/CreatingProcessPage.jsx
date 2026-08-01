@@ -5,6 +5,7 @@ import StandingProjector, { MobileProjector } from "./components/StandingProject
 import ProcessSequence from "./components/ProcessSequence";
 import useTimedProcessStage from "./components/useTimedProcessStage";
 import processStagesFor from "./components/processStages";
+import preloadProcessStages from "./components/preloadProcessStages";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
@@ -59,7 +60,7 @@ function CreatingProcessPage() {
     processArtworks.some((artwork) => artwork.id === initialId) ? initialId : null,
   );
   const [projectorPhase, setProjectorPhase] = useState(
-    processArtworks.some((artwork) => artwork.id === initialId) ? "on" : "off",
+    processArtworks.some((artwork) => artwork.id === initialId) ? "inserting" : "off",
   );
   const [stageIndex, setStageIndex] = useState(0);
   const [isProcessPaused, setIsProcessPaused] = useState(false);
@@ -79,12 +80,28 @@ function CreatingProcessPage() {
   });
 
   useEffect(() => {
-    if (projectorPhase !== "inserting") return undefined;
-    const timer = window.setTimeout(() => setProjectorPhase("on"), 720);
-    return () => window.clearTimeout(timer);
-  }, [projectorPhase]);
+    if (projectorPhase !== "inserting" || !selectedArtwork) return undefined;
+    let cancelled = false;
+    let timer;
+    const insertionAnimation = new Promise((resolve) => {
+      timer = window.setTimeout(resolve, 720);
+    });
+
+    Promise.all([
+      insertionAnimation,
+      preloadProcessStages(selectedArtwork, "high"),
+    ]).then(() => {
+      if (!cancelled) setProjectorPhase("on");
+    });
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [projectorPhase, selectedArtwork]);
 
   const selectArtwork = (artwork) => {
+    preloadProcessStages(artwork, "high");
     setStageIndex(0);
     setSelectedId(artwork.id);
     setProjectorPhase("inserting");
@@ -124,6 +141,8 @@ function CreatingProcessPage() {
                     "--card-index": index,
                   }}
                   onClick={() => selectArtwork(artwork)}
+                  onPointerEnter={() => preloadProcessStages(artwork)}
+                  onFocus={() => preloadProcessStages(artwork)}
                 >
                   <img src={artwork.image} alt="" />
                 </button>
