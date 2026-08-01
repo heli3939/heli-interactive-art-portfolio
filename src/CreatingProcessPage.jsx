@@ -74,11 +74,11 @@ function CreatingProcessPage() {
 
   useEffect(() => {
     if (!isProjectorOn || !selectedArtwork || stages.length < 2 || isProcessPaused) return undefined;
-    const timer = window.setInterval(() => {
-      setStageIndex((index) => (index + 1) % stages.length);
+    const timer = window.setTimeout(() => {
+      setStageIndex((stageIndex + 1) % stages.length);
     }, 1500);
-    return () => window.clearInterval(timer);
-  }, [isProjectorOn, selectedArtwork, stages.length, isProcessPaused]);
+    return () => window.clearTimeout(timer);
+  }, [isProjectorOn, selectedArtwork, stages.length, isProcessPaused, stageIndex]);
 
   useEffect(() => {
     if (projectorPhase !== "inserting") return undefined;
@@ -178,6 +178,18 @@ function CreatingProcessPage() {
                 ))}
               </div>
               <div className="process-progress" aria-label={`Stage ${stageIndex + 1} of ${stages.length}`}>
+                <span
+                  className="process-progress__fill"
+                  key={`${stageIndex}-${isProcessPaused}`}
+                  style={{
+                    "--progress-start": `${((stageIndex + 0.5) / stages.length) * 100}%`,
+                    "--progress-end": `${stageIndex === stages.length - 1
+                      ? 100
+                      : ((stageIndex + 1.5) / stages.length) * 100}%`,
+                    "--progress-play-state": isProcessPaused ? "paused" : "running",
+                  }}
+                  aria-hidden="true"
+                />
                 {stages.map((stage, index) => (
                   <button
                     type="button"

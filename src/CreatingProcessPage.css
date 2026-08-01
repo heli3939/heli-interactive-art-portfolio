@@ -133,7 +133,7 @@
 }
 
 .process-card--printmaking {
-  top: 8px;
+  top: 7px;
 }
 
 .process-card:hover,
@@ -263,9 +263,27 @@
   top: 8px;
   right: 0;
   left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #8047ff, #39e9ff);
+  height: 5px;
+  background: rgb(55 31 132 / 72%);
   content: "";
+}
+
+.process-progress__fill {
+  position: absolute;
+  z-index: 0;
+  top: 7px;
+  left: 0;
+  width: var(--progress-start);
+  height: 5px;
+  background: linear-gradient(90deg, #8047ff, #39e9ff);
+  animation: process-progress-fill 1500ms linear forwards;
+  animation-play-state: var(--progress-play-state);
+  pointer-events: none;
+}
+
+@keyframes process-progress-fill {
+  from { width: var(--progress-start); }
+  to { width: var(--progress-end); }
 }
 
 .process-progress button {
@@ -418,8 +436,9 @@
     margin-top: 7px;
   }
 
-  .process-progress::before {
-    top: 6px;
+  .process-progress::before,
+  .process-progress__fill {
+    top: 5px;
   }
 
   .process-progress button {

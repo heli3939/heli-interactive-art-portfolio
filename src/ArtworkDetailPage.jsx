@@ -97,6 +97,7 @@ function ProcessToggle({ artwork, isOn, onToggle }) {
 function DetailProcessViewer({
   artwork,
   stageIndex,
+  isPaused,
   onStageChange,
   onPauseChange,
   onImageOpen,
@@ -153,6 +154,18 @@ function DetailProcessViewer({
         ))}
       </div>
       <div className="detail-process-progress" aria-label={`Stage ${stageIndex + 1} of ${stages.length}`}>
+        <span
+          className="detail-process-progress__fill"
+          key={`${stageIndex}-${isPaused}`}
+          style={{
+            "--progress-start": `${((stageIndex + 0.5) / stages.length) * 100}%`,
+            "--progress-end": `${stageIndex === stages.length - 1
+              ? 100
+              : ((stageIndex + 1.5) / stages.length) * 100}%`,
+            "--progress-play-state": isPaused ? "paused" : "running",
+          }}
+          aria-hidden="true"
+        />
         {stages.map((stage, index) => (
           <button
             type="button"
@@ -208,12 +221,12 @@ function ArtworkDetailPage({ artworkId }) {
   useEffect(() => {
     if (!isProjectorOn || stageCount < 2 || isProcessPaused) return undefined;
 
-    const timer = window.setInterval(() => {
-      setStageIndex((index) => (index + 1) % stageCount);
+    const timer = window.setTimeout(() => {
+      setStageIndex((stageIndex + 1) % stageCount);
     }, 1500);
 
-    return () => window.clearInterval(timer);
-  }, [isProjectorOn, stageCount, isProcessPaused]);
+    return () => window.clearTimeout(timer);
+  }, [isProjectorOn, stageCount, isProcessPaused, stageIndex]);
 
   if (!artwork) {
     return (
@@ -308,6 +321,7 @@ function ArtworkDetailPage({ artworkId }) {
             <DetailProcessViewer
               artwork={artwork}
               stageIndex={stageIndex}
+              isPaused={isProcessPaused}
               onStageChange={setStageIndex}
               onPauseChange={setIsProcessPaused}
               onImageOpen={setLightboxImage}
