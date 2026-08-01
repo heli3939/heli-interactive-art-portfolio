@@ -979,60 +979,44 @@ body.has-puzzle-room {
 }
 
 @media (min-width: 1025px) and (max-width: 1249px) {
-  .puzzle-page .mobile-nav {
-    position: fixed;
-    z-index: 100;
-    top: 0;
-    right: 0;
-    display: block;
-    width: 50vw;
-    height: 100dvh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    border: 2px solid #411cff;
-    border-right: 0;
-    border-radius: 28px 0 0 28px;
-    background: linear-gradient(
-      180deg,
-      rgba(146, 139, 242, 0.699),
-      rgba(36, 135, 255, 0.637)
-    );
-    box-shadow: -10px 0 24px rgb(38 13 111 / 45%);
+  .puzzle-page {
+    padding-top: 0;
   }
 
-  .puzzle-page .mobile-nav-backdrop {
-    position: fixed;
-    z-index: 80;
-    inset: 0;
-    display: block;
-    padding: 0;
-    border: 0;
-    background: rgb(39 25 112 / 48%);
-  }
-
-  .puzzle-page .mobile-nav nav {
+  .puzzle-page .site-header {
     position: relative;
-    z-index: 2;
+    top: auto;
+    right: auto;
+    left: auto;
+    justify-content: flex-start;
+    gap: clamp(24px, 3vw, 44px);
+    height: 105px;
+    padding: 0 30px 0 24px;
+  }
+
+  .puzzle-page .site-header::before {
+    content: none;
+  }
+
+  .puzzle-page .site-header__logo {
+    flex: 0 0 auto;
+    width: 190px;
+    height: 84px;
+  }
+
+  .puzzle-page .site-header__nav {
     display: flex;
-    flex-direction: column;
-    gap: clamp(24px, 4vw, 34px);
-    padding: 34px clamp(12px, 2vw, 18px) 28px;
   }
 
-  .puzzle-page .mobile-nav__heading {
-    position: relative;
-    z-index: 2;
-    margin: 76px clamp(12px, 2vw, 18px) 0;
-    padding-bottom: 12px;
-    color: #b8fffb;
-    font: 400 clamp(21px, 3vw, 30px)/1 Bitcount, monospace;
+  .puzzle-page .site-header__menu,
+  .puzzle-page .mobile-nav,
+  .puzzle-page .mobile-nav-backdrop,
+  .puzzle-header__back {
+    display: none;
   }
 
-  .puzzle-page .mobile-nav a {
-    color: #b8fffb;
-    font: 400 clamp(17px, 2.5vw, 28px)/1.18 Bitcount, monospace;
-    text-decoration: none;
-    text-shadow: -2px 0 #3300ff, 2px 0 #3300ff, 0 -2px #3300ff, 0 2px #3300ff;
+  .puzzle-complete-back {
+    display: grid;
   }
 }
 
