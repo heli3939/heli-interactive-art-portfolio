@@ -44,8 +44,9 @@ function ArtworkCard({ artwork, index = 0 }) {
                 className="artwork-card__image"
                 src={artwork.image}
                 alt={artwork.alt || artwork.title || "Artwork by heli"}
-                loading="lazy"
+                loading={index < 2 ? "eager" : "lazy"}
                 decoding="async"
+                fetchPriority={index === 0 ? "high" : "auto"}
               />
             ) : (
               <div className="artwork-card__image-placeholder">Image coming soon</div>

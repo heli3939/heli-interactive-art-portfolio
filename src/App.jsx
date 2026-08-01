@@ -33,7 +33,21 @@ const contacts = [
 ];
 
 const galleryArtworks = artworks.filter((artwork) => artwork.hasProcess);
+const galleryImagePreloads = new Map();
 const contactAlphaMaps = new WeakMap();
+
+function preloadGalleryImage(artwork, fetchPriority = "low") {
+  if (!artwork?.image || galleryImagePreloads.has(artwork.image)) return;
+
+  const image = new Image();
+  image.decoding = "async";
+  image.fetchPriority = fetchPriority;
+  image.src = artwork.image;
+  galleryImagePreloads.set(artwork.image, image);
+  image.decode?.().catch(() => {
+    // A normal <img> request can still display the image if early decoding fails.
+  });
+}
 
 function isOpaqueContactPixel(image, clientX, clientY) {
   if (!image?.complete || !image.naturalWidth) return false;
@@ -163,14 +177,6 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
   const galleryRef = useRef(null);
   const [isInstructionVisible, setIsInstructionVisible] = useState(true);
   const [hasMoreArtworks, setHasMoreArtworks] = useState(true);
-
-  useEffect(() => {
-    const instructionTimer = window.setTimeout(() => {
-      setIsInstructionVisible(false);
-    }, 2500);
-
-    return () => window.clearTimeout(instructionTimer);
-  }, []);
 
   useEffect(() => {
     const gallery = galleryRef.current;
@@ -437,12 +443,11 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
             style={{
               "--card-x": "50%",
               "--card-y": "52%",
-              "--card-width": "25rem",
               zIndex: 30,
             }}
           >
-            <WindowFrame title="*Hint*" className="gallery-instruction__window">
-              <p>
+            <WindowFrame title="*Hint*" className="gallery-instruction__window portfolio-hint-window">
+              <p className="portfolio-hint-window__copy">
                 Scroll or swipe to explore my artworks.
               </p>
             </WindowFrame>
@@ -477,6 +482,24 @@ function App() {
   const [currentPage, setCurrentPage] = useState(
     window.location.hash === "#gallery" ? "gallery" : "about",
   );
+
+  useEffect(() => {
+    preloadGalleryImage(galleryArtworks[0], "high");
+
+    const preloadRemaining = () => {
+      galleryArtworks.slice(1).forEach((artwork) => {
+        preloadGalleryImage(artwork);
+      });
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preloadRemaining, { timeout: 1200 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = window.setTimeout(preloadRemaining, 300);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const updatePageFromHash = () => {
@@ -570,7 +593,7 @@ function App() {
             aria-labelledby="mobile-nav-heading"
           >
             <p className="mobile-nav__heading" id="mobile-nav-heading">
-              Navigation
+              Menu
             </p>
             <nav id="mobile-navigation" aria-label="Mobile navigation">
               <a

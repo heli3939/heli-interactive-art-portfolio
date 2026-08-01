@@ -389,13 +389,24 @@ body.has-puzzle-room {
   container-type: inline-size;
   min-height: 639px;
   overflow: visible;
-  border: 1px solid rgb(108 196 255 / 32%);
-  background: rgb(105 193 255 / 13%);
-  box-shadow: 0 5px 6px rgb(0 0 0 / 18%);
+  border: 2px solid rgb(99 59 255 / 55%);
+  background: rgba(57, 94, 227, 0.25);
+  box-shadow: 0 5px 5px rgb(0 0 0 / 24%);
 }
 
 .puzzle-pieces-area:has(.puzzle-piece.is-dragging) {
   z-index: 80;
+}
+
+.puzzle-piece-boundary {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.puzzle-piece-boundary.is-active {
+  overflow: visible;
 }
 
 .puzzle-room.is-exploring {
@@ -427,6 +438,7 @@ body.has-puzzle-room {
   transform: translate(-50%, -50%);
   animation: piece-float var(--float-duration) ease-in-out var(--float-delay) infinite alternate;
   filter: drop-shadow(5px 8px 5px rgb(39 34 150 / 28%));
+  pointer-events: auto;
 }
 
 .puzzle-piece img {

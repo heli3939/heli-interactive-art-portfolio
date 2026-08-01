@@ -308,7 +308,7 @@
 }
 
 .artwork-card-flight.gallery-instruction {
-  width: min(var(--card-width), 82vw);
+  width: min(390px, 82vw);
   transition: opacity 450ms ease;
 }
 
@@ -318,22 +318,7 @@
 }
 
 .gallery-instruction__window {
-  width: 100%;
-  height: auto;
-}
-
-.gallery-instruction__window .window-frame__content {
-  height: auto;
-}
-
-.gallery-instruction__window p {
-  margin: 0;
-  padding: clamp(34px, 8vw, 42px) clamp(22px, 6vw, 32px) clamp(22px, 5vw, 28px);
-  color: #4d1bd4;
-  font-family: VT323, monospace;
-  font-size: clamp(19px, 1.8vw, 25px);
-  line-height: 1.2;
-  text-align: left;
+  margin: 0 auto;
 }
 
 .gallery-scroll-cue {

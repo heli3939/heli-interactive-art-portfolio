@@ -39,7 +39,7 @@ function ProcessHeader({ isMenuOpen, onMenuToggle, onMenuClose }) {
         <>
           <button className="mobile-nav-backdrop" type="button" aria-label="Close navigation" onClick={onMenuClose} />
           <aside className="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation">
-            <p className="mobile-nav__heading">Navigation</p>
+            <p className="mobile-nav__heading">Menu</p>
             <nav>
               <a href={sitePath("#gallery")}>Artwork Collection</a>
               <a href={sitePath("creating-process")} aria-current="page" onClick={onMenuClose}>Creating Process</a>
@@ -153,8 +153,8 @@ function CreatingProcessPage() {
               }}
             />
           ) : (
-            <WindowFrame title="*Hint*" className="process-viewer__prompt-window">
-              <p className="process-viewer__prompt">Select an artwork to view its creating process.</p>
+            <WindowFrame title="*Hint*" className="process-viewer__prompt-window portfolio-hint-window">
+              <p className="process-viewer__prompt portfolio-hint-window__copy">Select an artwork to view its creating process.</p>
             </WindowFrame>
           )}
         </section>

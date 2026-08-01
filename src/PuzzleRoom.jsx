@@ -13,6 +13,7 @@ const puzzlePieceIds = Array.from(
 );
 const progressStorageKey = "puzzle-room-placed";
 const layoutStorageKey = "puzzle-room-layout";
+const completionPromptDelay = 1400;
 
 const desktopPositions = [
   [21, 20], [50, 19], [79, 21], [22, 50], [50, 49],
@@ -262,7 +263,7 @@ function PuzzleRoom() {
     setIsExploring(true);
     const timer = window.setTimeout(() => {
       setShowUnlockPrompt(true);
-    }, 760);
+    }, completionPromptDelay);
     return () => window.clearTimeout(timer);
   }, [completed]);
 
@@ -422,7 +423,8 @@ function PuzzleRoom() {
     if (!visibleTarget) return;
     const activePiece = visibleTarget.piece;
     const bounds = visibleTarget.element.getBoundingClientRect();
-    const piecesArea = visibleTarget.element.parentElement;
+    const piecesArea = visibleTarget.element.closest(".puzzle-pieces-area");
+    if (!piecesArea) return;
     const piecesAreaBounds = piecesArea.getBoundingClientRect();
     const alphaMap = getAlphaMap(visibleTarget.element.querySelector("img"));
     event.preventDefault();
@@ -691,55 +693,60 @@ function PuzzleRoom() {
           {pieces.map((piece) => {
             if (placed.has(piece.id) || !piece.image) return null;
             const isDragging = drag?.id === piece.id;
+            const isSelected = selectedPiece === piece.id;
             return (
-              <button
-                className={[
-                  "puzzle-piece",
-                  isDragging ? "is-dragging" : "",
-                  incorrectPiece === piece.id ? "is-incorrect" : "",
-                  selectedPiece === piece.id ? "is-selected" : "",
-                  hoveredPiece === piece.id ? "is-alpha-hover" : "",
-                ].join(" ")}
-                type="button"
+              <div
+                className={`puzzle-piece-boundary${isSelected ? " is-active" : ""}`}
                 key={piece.id}
-                data-piece-id={piece.id}
-                aria-label={`Puzzle piece ${piece.number}. Press Enter or Space to select it.`}
-                aria-pressed={selectedPiece === piece.id}
-                style={isDragging ? {
-                  left: `${drag.x - drag.containerLeft}px`,
-                  top: `${drag.y - drag.containerTop}px`,
-                  width: `${drag.width}px`,
-                  height: `${drag.height}px`,
-                  position: "absolute",
-                  "--piece-shape": `url("${piece.image}")`,
-                  "--float-duration": `${piece.duration}s`,
-                  "--float-delay": `${piece.delay}s`,
-                } : {
-                  left: `${piece.x}%`,
-                  top: `${piece.y}%`,
-                  "--piece-shape": `url("${piece.image}")`,
-                  "--float-duration": `${piece.duration}s`,
-                  "--float-delay": `${piece.delay}s`,
-                }}
-                onPointerDown={(event) => handlePointerDown(event, piece)}
-                onPointerMove={(event) => {
-                  updatePieceHover(event, piece.id);
-                  handlePointerMove(event);
-                }}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerUp}
-                onPointerLeave={() => {
-                  if (!dragRef.current) setHoveredPiece(null);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setSelectedPiece(piece.id);
-                  }
-                }}
               >
-                <img src={piece.image} alt={piece.alt} draggable={false} />
-              </button>
+                <button
+                  className={[
+                    "puzzle-piece",
+                    isDragging ? "is-dragging" : "",
+                    incorrectPiece === piece.id ? "is-incorrect" : "",
+                    isSelected ? "is-selected" : "",
+                    hoveredPiece === piece.id ? "is-alpha-hover" : "",
+                  ].join(" ")}
+                  type="button"
+                  data-piece-id={piece.id}
+                  aria-label={`Puzzle piece ${piece.number}. Press Enter or Space to select it.`}
+                  aria-pressed={isSelected}
+                  style={isDragging ? {
+                    left: `${drag.x - drag.containerLeft}px`,
+                    top: `${drag.y - drag.containerTop}px`,
+                    width: `${drag.width}px`,
+                    height: `${drag.height}px`,
+                    position: "absolute",
+                    "--piece-shape": `url("${piece.image}")`,
+                    "--float-duration": `${piece.duration}s`,
+                    "--float-delay": `${piece.delay}s`,
+                  } : {
+                    left: `${piece.x}%`,
+                    top: `${piece.y}%`,
+                    "--piece-shape": `url("${piece.image}")`,
+                    "--float-duration": `${piece.duration}s`,
+                    "--float-delay": `${piece.delay}s`,
+                  }}
+                  onPointerDown={(event) => handlePointerDown(event, piece)}
+                  onPointerMove={(event) => {
+                    updatePieceHover(event, piece.id);
+                    handlePointerMove(event);
+                  }}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={handlePointerUp}
+                  onPointerLeave={() => {
+                    if (!dragRef.current) setHoveredPiece(null);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelectedPiece(piece.id);
+                    }
+                  }}
+                >
+                  <img src={piece.image} alt={piece.alt} draggable={false} />
+                </button>
+              </div>
             );
           })}
         </section>
