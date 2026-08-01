@@ -11,10 +11,39 @@ body,
   min-height: 100%;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   min-width: 320px;
   background: #9cbfff;
   font-synthesis: none;
+}
+
+:where(.about-page, .detail-page, .process-page, .puzzle-page) {
+  position: relative;
+  isolation: isolate;
+  background-color: #c6bdff;
+  background-image: none;
+}
+
+:where(.about-page, .detail-page, .process-page, .puzzle-page)::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background-image: var(
+    --page-background,
+    var(
+      --detail-background,
+      var(--process-background, var(--puzzle-background))
+    )
+  );
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  content: "";
+  pointer-events: none;
 }
 
 button,
@@ -25,4 +54,3 @@ a {
 button {
   color: inherit;
 }
-

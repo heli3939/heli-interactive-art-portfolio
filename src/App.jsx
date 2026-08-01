@@ -33,6 +33,34 @@ const contacts = [
 ];
 
 const galleryArtworks = artworks.filter((artwork) => artwork.hasProcess);
+const contactAlphaMaps = new WeakMap();
+
+function isOpaqueContactPixel(image, clientX, clientY) {
+  if (!image?.complete || !image.naturalWidth) return false;
+  let alphaMap = contactAlphaMaps.get(image);
+
+  if (!alphaMap) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    alphaMap = new Uint8Array(canvas.width * canvas.height);
+    for (let index = 0; index < alphaMap.length; index += 1) {
+      alphaMap[index] = pixels[index * 4 + 3];
+    }
+    contactAlphaMaps.set(image, alphaMap);
+  }
+
+  const bounds = image.getBoundingClientRect();
+  const relativeX = (clientX - bounds.left) / bounds.width;
+  const relativeY = (clientY - bounds.top) / bounds.height;
+  if (relativeX < 0 || relativeX >= 1 || relativeY < 0 || relativeY >= 1) return false;
+  const x = Math.min(255, Math.floor(relativeX * 256));
+  const y = Math.min(255, Math.floor(relativeY * 256));
+  return alphaMap[y * 256 + x] > 24;
+}
 
 function AboutCopy() {
   const copyRef = useRef(null);
@@ -92,23 +120,40 @@ Through this portfolio, I hope you can connect with both my artwork and the crea
   );
 }
 
+function ContactLink({ contact, mobile }) {
+  const imageRef = useRef(null);
+  const [isAlphaHovered, setIsAlphaHovered] = useState(false);
+  const isPointerOnIcon = (event) => (
+    isOpaqueContactPixel(imageRef.current, event.clientX, event.clientY)
+  );
+
+  return (
+    <a
+      className={`${mobile ? "mobile-contact__link" : "contact-list__link"}${isAlphaHovered ? " is-alpha-hover" : ""}`}
+      href={contact.href}
+      aria-label={`${contact.name}: ${contact.label}`}
+      target={contact.href.startsWith("http") ? "_blank" : undefined}
+      rel={contact.href.startsWith("http") ? "noreferrer" : undefined}
+      onPointerMove={(event) => setIsAlphaHovered(isPointerOnIcon(event))}
+      onPointerLeave={() => setIsAlphaHovered(false)}
+    >
+      <span className={`contact-icon contact-icon--${contact.name.toLowerCase()}`}>
+        <img ref={imageRef} src={contact.icon} alt="" draggable={false} />
+      </span>
+      {!mobile && <span>{contact.label}</span>}
+    </a>
+  );
+}
+
 function ContactLinks({ mobile = false }) {
   return (
     <div className={mobile ? "mobile-contact__links" : "contact-list"}>
       {contacts.map((contact) => (
-        <a
-          className={mobile ? "mobile-contact__link" : "contact-list__link"}
-          href={contact.href}
+        <ContactLink
+          contact={contact}
+          mobile={mobile}
           key={contact.name}
-          aria-label={`${contact.name}: ${contact.label}`}
-          target={contact.href.startsWith("http") ? "_blank" : undefined}
-          rel={contact.href.startsWith("http") ? "noreferrer" : undefined}
-        >
-          <span className={`contact-icon contact-icon--${contact.name.toLowerCase()}`}>
-            <img src={contact.icon} alt="" />
-          </span>
-          {!mobile && <span>{contact.label}</span>}
-        </a>
+        />
       ))}
     </div>
   );

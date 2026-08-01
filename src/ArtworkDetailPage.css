@@ -1,9 +1,6 @@
 .detail-page {
   min-height: 100svh;
   overflow-x: hidden;
-  background-image: var(--detail-background);
-  background-position: center;
-  background-size: cover;
 }
 
 .detail-layout {
@@ -290,6 +287,9 @@
   place-items: center;
   padding: 24px;
   background-image: url("./assets/background/bg_1000px.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .detail-unavailable {
