@@ -125,7 +125,6 @@ function ReferenceAnnotation({ reference, onClose }) {
       className={`reference-note reference-note--${reference.position}`}
       title={`REFERENCE ${String(reference.id).padStart(2, "0")}`}
       onClose={onClose}
-      showCloseButton
       onClick={(event) => event.stopPropagation()}
       style={{
         "--reference-row": row,
@@ -164,7 +163,6 @@ function PuzzleRoom() {
   const roomRef = useRef(null);
   const boardRef = useRef(null);
   const dragRef = useRef(null);
-  const unlockPromptOpenedRef = useRef(false);
   const alphaCanvasRef = useRef(new WeakMap());
   const [layoutOrder] = useState(createLayoutOrder);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 720);
@@ -173,6 +171,8 @@ function PuzzleRoom() {
     [isMobile, layoutOrder],
   );
   const [placed, setPlaced] = useState(createPlacedSet);
+  const unlockPromptOpenedRef = useRef(placed.size === puzzlePieceIds.length);
+  const [isExploring, setIsExploring] = useState(false);
   const [drag, setDrag] = useState(null);
   const [highlighted, setHighlighted] = useState(null);
   const [selectedPiece, setSelectedPiece] = useState(null);
@@ -184,7 +184,19 @@ function PuzzleRoom() {
   const [showUnlockPrompt, setShowUnlockPrompt] = useState(false);
 
   const completed = placed.size === pieces.length;
+  const puzzleMode = !completed
+    ? "playing"
+    : activeReference
+      ? "viewingDetail"
+      : isExploring
+        ? "exploring"
+        : "completed";
   const boardArtwork = artworks.find((item) => item.id === "illust-puzzle-game-0");
+
+  useEffect(() => {
+    document.body.classList.add("has-puzzle-room");
+    return () => document.body.classList.remove("has-puzzle-room");
+  }, []);
 
   useEffect(() => {
     const updateLayout = () => setIsMobile(window.innerWidth <= 720);
@@ -226,7 +238,10 @@ function PuzzleRoom() {
   useEffect(() => {
     if (!activeReference) return undefined;
     const closeOnEscape = (event) => {
-      if (event.key === "Escape") setActiveReference(null);
+      if (event.key === "Escape") {
+        setActiveReference(null);
+        setIsExploring(false);
+      }
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
@@ -244,6 +259,7 @@ function PuzzleRoom() {
   useEffect(() => {
     if (!completed || unlockPromptOpenedRef.current) return undefined;
     unlockPromptOpenedRef.current = true;
+    setIsExploring(true);
     const timer = window.setTimeout(() => {
       setShowUnlockPrompt(true);
     }, 760);
@@ -480,8 +496,14 @@ function PuzzleRoom() {
     setIncorrectPiece(null);
     setRecentPiece(null);
     setActiveReference(null);
+    setIsExploring(false);
     setShowUnlockPrompt(false);
     unlockPromptOpenedRef.current = false;
+  };
+
+  const returnFromPuzzle = () => {
+    setActiveReference(null);
+    setIsExploring(false);
   };
 
   const activeReferenceData = puzzleReferences.find(
@@ -494,12 +516,12 @@ function PuzzleRoom() {
       style={{ "--puzzle-background": `url(${background})` }}
     >
       <header className="site-header">
-        {completed && !isMenuOpen && (
+        {completed && isExploring && !isMenuOpen && (
           <button
             className="puzzle-header__back"
             type="button"
-            onClick={resetPuzzle}
-            aria-label="Return to the original Puzzle Room"
+            onClick={returnFromPuzzle}
+            aria-label="Return to the completed Puzzle Room"
           >
             <span aria-hidden="true">&gt;</span>
           </button>
@@ -553,16 +575,17 @@ function PuzzleRoom() {
       )}
 
       <main
-        className={`puzzle-room ${completed ? "is-complete" : "is-incomplete"}`}
+        className={`puzzle-room ${completed ? "is-complete" : "is-incomplete"}${isExploring ? " is-exploring" : ""}`}
+        data-puzzle-mode={puzzleMode}
         ref={roomRef}
         inert={isMenuOpen || showUnlockPrompt ? true : undefined}
       >
-        {completed && !isMenuOpen && (
+        {completed && isExploring && !isMenuOpen && (
           <button
             className="puzzle-complete-back"
             type="button"
-            onClick={resetPuzzle}
-            aria-label="Return to the original Puzzle Room"
+            onClick={returnFromPuzzle}
+            aria-label="Return to the completed Puzzle Room"
           >
             <span aria-hidden="true">&gt;</span>
           </button>
@@ -624,7 +647,7 @@ function PuzzleRoom() {
                 aria-hidden="true"
               />
             )}
-              {completed && (
+              {completed && isExploring && (
                 <div className="reference-grid" aria-label="Album references">
                   {puzzleReferences.map((reference) => {
                     const piece = pieces[reference.id - 1];
@@ -645,15 +668,20 @@ function PuzzleRoom() {
             {completed && activeReferenceData && (
               <ReferenceAnnotation
                 reference={activeReferenceData}
-                onClose={() => setActiveReference(null)}
+                onClose={returnFromPuzzle}
               />
             )}
           </div>
-          {!completed && (
+          {!isExploring && (
             <div className="puzzle-status">
               <p aria-live="polite">{`${placed.size} of 9 pieces placed`}</p>
               <div>
-                <button type="button" onClick={resetPuzzle}>Reset Puzzle</button>
+                <button type="button" onClick={resetPuzzle}>Reset</button>
+                {completed && (
+                  <button type="button" onClick={() => setIsExploring(true)}>
+                    Explore
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -733,7 +761,13 @@ function PuzzleRoom() {
               <p>
                 Click each puzzle piece to explore music and concepts behind it.
               </p>
-              <button type="button" onClick={() => setShowUnlockPrompt(false)}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUnlockPrompt(false);
+                  setIsExploring(true);
+                }}
+              >
                 Start Exploration
               </button>
             </div>
