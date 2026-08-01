@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import WindowFrame from "./components/WindowFrame";
 import ImageLightbox from "./components/ImageLightbox";
 import StandingProjector, { MobileProjector } from "./components/StandingProjector";
+import ProcessSequence from "./components/ProcessSequence";
+import useTimedProcessStage from "./components/useTimedProcessStage";
+import processStagesFor from "./components/processStages";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
@@ -102,80 +105,27 @@ function DetailProcessViewer({
   onPauseChange,
   onImageOpen,
 }) {
-  const stages = [
-    ...artwork.processImages,
-    {
-      id: `${artwork.id}-final`,
-      image: artwork.image,
-      alt: `${artwork.title} final artwork`,
-    },
-  ];
+  const stages = processStagesFor(artwork);
 
   return (
     <section className="detail-process-viewer" aria-label={`Creating process for ${artwork.title}`} aria-live="polite">
-      <h2 className="detail-process-viewer__title">{artwork.title}</h2>
-      <div className="detail-process-viewer__stage">
-        <img
-          className="detail-process-viewer__size-reference"
-          src={artwork.image}
-          alt=""
-          aria-hidden="true"
-        />
-        <img
-          className="detail-process-viewer__main"
-          src={stages[stageIndex].image}
-          alt={stages[stageIndex].alt}
-          tabIndex="0"
-          onMouseEnter={() => onPauseChange(true)}
-          onMouseLeave={() => onPauseChange(false)}
-          onFocus={() => onPauseChange(true)}
-          onBlur={() => onPauseChange(false)}
-          onClick={() => onImageOpen(stages[stageIndex])}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              onImageOpen(stages[stageIndex]);
-            }
-          }}
-        />
-      </div>
-      <div className="detail-process-thumbnails">
-        {stages.map((stage, index) => (
-          <button
-            className={index === stageIndex ? "is-active" : ""}
-            type="button"
-            key={stage.id}
-            onClick={() => onStageChange(index)}
-            aria-label={`View stage ${index + 1} of ${artwork.title}`}
-            aria-current={index === stageIndex ? "step" : undefined}
-          >
-            <img src={stage.image} alt="" />
-          </button>
-        ))}
-      </div>
-      <div className="detail-process-progress" aria-label={`Stage ${stageIndex + 1} of ${stages.length}`}>
-        <span
-          className="detail-process-progress__fill"
-          key={`${stageIndex}-${isPaused}`}
-          style={{
-            "--progress-start": `${((stageIndex + 0.5) / stages.length) * 100}%`,
-            "--progress-end": `${stageIndex === stages.length - 1
-              ? 100
-              : ((stageIndex + 1.5) / stages.length) * 100}%`,
-            "--progress-play-state": isPaused ? "paused" : "running",
-          }}
-          aria-hidden="true"
-        />
-        {stages.map((stage, index) => (
-          <button
-            type="button"
-            key={stage.id}
-            className={index === stageIndex ? "is-active" : ""}
-            onClick={() => onStageChange(index)}
-            aria-label={`Go to stage ${index + 1}`}
-          />
-        ))}
-      </div>
+      <ProcessSequence
+        title={artwork.title}
+        stages={stages}
+        stageIndex={stageIndex}
+        isPaused={isPaused}
+        onStageChange={onStageChange}
+        onPauseChange={onPauseChange}
+        onImageOpen={onImageOpen}
+        classes={{
+          title: "detail-process-viewer__title",
+          stage: "detail-process-viewer__stage",
+          sizeReference: "detail-process-viewer__size-reference",
+          main: "detail-process-viewer__main",
+          thumbnails: "detail-process-thumbnails",
+          progress: "detail-process-progress",
+        }}
+      />
     </section>
   );
 }
@@ -190,6 +140,7 @@ function ArtworkDetailPage({ artworkId }) {
   const stageCount = artwork?.hasProcess ? artwork.processImages.length + 1 : 0;
   const isProjectorOn = projectorPhase === "on";
   const isProjectorActive = projectorPhase !== "off";
+  const isProcessPlaybackPaused = isProcessPaused || Boolean(lightboxImage);
 
   useEffect(() => {
     if (!isMenuOpen) return undefined;
@@ -218,15 +169,13 @@ function ArtworkDetailPage({ artworkId }) {
     return () => window.clearTimeout(timer);
   }, [projectorPhase]);
 
-  useEffect(() => {
-    if (!isProjectorOn || stageCount < 2 || isProcessPaused) return undefined;
-
-    const timer = window.setTimeout(() => {
-      setStageIndex((stageIndex + 1) % stageCount);
-    }, 1500);
-
-    return () => window.clearTimeout(timer);
-  }, [isProjectorOn, stageCount, isProcessPaused, stageIndex]);
+  useTimedProcessStage({
+    enabled: isProjectorOn,
+    isPaused: isProcessPlaybackPaused,
+    stageCount,
+    stageIndex,
+    setStageIndex,
+  });
 
   if (!artwork) {
     return (
@@ -321,7 +270,7 @@ function ArtworkDetailPage({ artworkId }) {
             <DetailProcessViewer
               artwork={artwork}
               stageIndex={stageIndex}
-              isPaused={isProcessPaused}
+              isPaused={isProcessPlaybackPaused}
               onStageChange={setStageIndex}
               onPauseChange={setIsProcessPaused}
               onImageOpen={setLightboxImage}
@@ -343,7 +292,10 @@ function ArtworkDetailPage({ artworkId }) {
       <ImageLightbox
         image={lightboxImage?.image}
         alt={lightboxImage?.alt}
-        onClose={() => setLightboxImage(null)}
+        onClose={() => {
+          setLightboxImage(null);
+          setIsProcessPaused(false);
+        }}
       />
     </div>
   );

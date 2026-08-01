@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import WindowFrame from "./components/WindowFrame";
 import ImageLightbox from "./components/ImageLightbox";
 import StandingProjector, { MobileProjector } from "./components/StandingProjector";
+import ProcessSequence from "./components/ProcessSequence";
+import useTimedProcessStage from "./components/useTimedProcessStage";
+import processStagesFor from "./components/processStages";
 import artworks from "./data/artworks";
 import background from "./assets/background/bg_1000px.jpg";
 import logo from "./assets/icons/logo.png";
@@ -64,21 +67,16 @@ function CreatingProcessPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const selectedArtwork = processArtworks.find((artwork) => artwork.id === selectedId);
   const isProjectorOn = projectorPhase === "on";
-  const stages = selectedArtwork
-    ? [...selectedArtwork.processImages, {
-        id: `${selectedArtwork.id}-final`,
-        image: selectedArtwork.image,
-        alt: `${selectedArtwork.title} final artwork`,
-      }]
-    : [];
+  const isProcessPlaybackPaused = isProcessPaused || Boolean(lightboxImage);
+  const stages = processStagesFor(selectedArtwork);
 
-  useEffect(() => {
-    if (!isProjectorOn || !selectedArtwork || stages.length < 2 || isProcessPaused) return undefined;
-    const timer = window.setTimeout(() => {
-      setStageIndex((stageIndex + 1) % stages.length);
-    }, 1500);
-    return () => window.clearTimeout(timer);
-  }, [isProjectorOn, selectedArtwork, stages.length, isProcessPaused, stageIndex]);
+  useTimedProcessStage({
+    enabled: isProjectorOn && Boolean(selectedArtwork),
+    isPaused: isProcessPlaybackPaused,
+    stageCount: stages.length,
+    stageIndex,
+    setStageIndex,
+  });
 
   useEffect(() => {
     if (projectorPhase !== "inserting") return undefined;
@@ -136,71 +134,24 @@ function CreatingProcessPage() {
 
         <section className={`process-viewer${isProjectorOn ? " process-viewer--active" : ""}`} aria-live="polite">
           {isProjectorOn && selectedArtwork ? (
-            <>
-              <h1 className="process-viewer__title">{selectedArtwork.title}</h1>
-              <div className="process-viewer__stage">
-                <img
-                  className="process-viewer__size-reference"
-                  src={selectedArtwork.image}
-                  alt=""
-                  aria-hidden="true"
-                />
-                <img
-                  className="process-viewer__main"
-                  src={stages[stageIndex].image}
-                  alt={stages[stageIndex].alt}
-                  tabIndex="0"
-                  onMouseEnter={() => setIsProcessPaused(true)}
-                  onMouseLeave={() => setIsProcessPaused(false)}
-                  onFocus={() => setIsProcessPaused(true)}
-                  onBlur={() => setIsProcessPaused(false)}
-                  onClick={() => setLightboxImage(stages[stageIndex])}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setLightboxImage(stages[stageIndex]);
-                    }
-                  }}
-                />
-              </div>
-              <div className="process-thumbnails">
-                {stages.map((stage, index) => (
-                  <button
-                    className={index === stageIndex ? "is-active" : ""}
-                    type="button"
-                    key={stage.id}
-                    onClick={() => setStageIndex(index)}
-                    aria-label={`View stage ${index + 1} of ${selectedArtwork.title}`}
-                    aria-current={index === stageIndex ? "step" : undefined}
-                  >
-                    <img src={stage.image} alt="" />
-                  </button>
-                ))}
-              </div>
-              <div className="process-progress" aria-label={`Stage ${stageIndex + 1} of ${stages.length}`}>
-                <span
-                  className="process-progress__fill"
-                  key={`${stageIndex}-${isProcessPaused}`}
-                  style={{
-                    "--progress-start": `${((stageIndex + 0.5) / stages.length) * 100}%`,
-                    "--progress-end": `${stageIndex === stages.length - 1
-                      ? 100
-                      : ((stageIndex + 1.5) / stages.length) * 100}%`,
-                    "--progress-play-state": isProcessPaused ? "paused" : "running",
-                  }}
-                  aria-hidden="true"
-                />
-                {stages.map((stage, index) => (
-                  <button
-                    type="button"
-                    key={stage.id}
-                    className={index === stageIndex ? "is-active" : ""}
-                    onClick={() => setStageIndex(index)}
-                    aria-label={`Go to stage ${index + 1}`}
-                  />
-                ))}
-              </div>
-            </>
+            <ProcessSequence
+              title={selectedArtwork.title}
+              titleAs="h1"
+              stages={stages}
+              stageIndex={stageIndex}
+              isPaused={isProcessPlaybackPaused}
+              onStageChange={setStageIndex}
+              onPauseChange={setIsProcessPaused}
+              onImageOpen={setLightboxImage}
+              classes={{
+                title: "process-viewer__title",
+                stage: "process-viewer__stage",
+                sizeReference: "process-viewer__size-reference",
+                main: "process-viewer__main",
+                thumbnails: "process-thumbnails",
+                progress: "process-progress",
+              }}
+            />
           ) : (
             <WindowFrame title="*Hint*" className="process-viewer__prompt-window">
               <p className="process-viewer__prompt">Select an artwork to view its creating process.</p>
@@ -216,7 +167,10 @@ function CreatingProcessPage() {
       <ImageLightbox
         image={lightboxImage?.image}
         alt={lightboxImage?.alt}
-        onClose={() => setLightboxImage(null)}
+        onClose={() => {
+          setLightboxImage(null);
+          setIsProcessPaused(false);
+        }}
       />
     </div>
   );

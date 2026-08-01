@@ -1,0 +1,48 @@
+.process-sequence-progress {
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+}
+
+.process-sequence-progress__track,
+.process-sequence-progress__fill {
+  position: absolute;
+  z-index: 0;
+  top: 7px;
+  left: 0;
+  height: 5px;
+  pointer-events: none;
+}
+
+.process-sequence-progress__track {
+  right: 0;
+  background: rgb(55 31 132 / 72%);
+}
+
+.process-sequence-progress__fill {
+  width: var(--progress-start);
+  background: linear-gradient(90deg, #8047ff, #39e9ff);
+  animation: process-sequence-progress-fill 1500ms linear forwards;
+  animation-play-state: var(--progress-play-state);
+}
+
+.process-sequence-progress button {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid #6935ff;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.process-sequence-progress button.is-active {
+  background: var(--stage-progress-color);
+}
+
+@keyframes process-sequence-progress-fill {
+  from { width: var(--progress-start); }
+  to { width: var(--progress-end); }
+}

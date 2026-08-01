@@ -249,55 +249,7 @@
 }
 
 .detail-process-progress {
-  position: relative;
-  display: flex;
-  justify-content: space-around;
   margin-top: 25px;
-}
-
-.detail-process-progress::before {
-  position: absolute;
-  z-index: 0;
-  top: 7px;
-  right: 0;
-  left: 0;
-  height: 5px;
-  background: rgb(55 31 132 / 72%);
-  content: "";
-}
-
-.detail-process-progress__fill {
-  position: absolute;
-  z-index: 0;
-  top: 7px;
-  left: 0;
-  width: var(--progress-start);
-  height: 5px;
-  background: linear-gradient(90deg, #8047ff, #39e9ff);
-  animation: process-progress-fill 1500ms linear forwards;
-  animation-play-state: var(--progress-play-state);
-  pointer-events: none;
-}
-
-@keyframes process-progress-fill {
-  from { width: var(--progress-start); }
-  to { width: var(--progress-end); }
-}
-
-.detail-process-progress button {
-  z-index: 1;
-  width: 18px;
-  height: 18px;
-  padding: 0;
-  border: 1px solid #6935ff;
-  border-radius: 50%;
-  background: #fff;
-  cursor: pointer;
-}
-
-.detail-process-progress button.is-active {
-  background: #ffef45;
-  box-shadow: 0 0 0 4px rgb(255 239 69 / 35%);
 }
 
 .detail-page--unavailable {
