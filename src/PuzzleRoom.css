@@ -4,14 +4,10 @@ body.has-puzzle-room {
 }
 
 .puzzle-page {
-  min-height: 100svh;
-  overflow-x: hidden;
   background-color: #c6bdff;
 }
 
 .puzzle-page.is-incomplete {
-  min-height: 100svh;
-  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -1023,7 +1019,6 @@ body.has-puzzle-room {
 @media (max-width: 720px) {
   .puzzle-page.is-incomplete {
     min-height: 100svh;
-    overflow-x: hidden;
     overflow-y: auto;
   }
 
@@ -1093,7 +1088,6 @@ body.has-puzzle-room {
 @media (min-width: 721px) and (max-width: 1249px) and (orientation: landscape) {
   .puzzle-page.is-incomplete {
     min-height: 100svh;
-    overflow-x: hidden;
     overflow-y: auto;
   }
 

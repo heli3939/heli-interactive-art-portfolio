@@ -338,8 +338,13 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       }
     };
 
-    const handleTouchEnd = () => {
+    const handleTouchEnd = (event) => {
       if (touchStartY === null) return;
+
+      const finalTouch = event.changedTouches?.[0];
+      if (finalTouch) {
+        touchDeltaY = touchStartY - finalTouch.clientY;
+      }
 
       if (Math.abs(touchDeltaY) >= 24) {
         suppressClickUntil = Date.now() + 500;
@@ -366,6 +371,11 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
         requestRender();
       }
 
+      touchStartY = null;
+      touchDeltaY = 0;
+    };
+
+    const handleTouchCancel = () => {
       touchStartY = null;
       touchDeltaY = 0;
     };
@@ -403,7 +413,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
     gallery.addEventListener("touchstart", handleTouchStart, { passive: true });
     gallery.addEventListener("touchmove", handleTouchMove, { passive: false });
     gallery.addEventListener("touchend", handleTouchEnd);
-    gallery.addEventListener("touchcancel", handleTouchEnd);
+    gallery.addEventListener("touchcancel", handleTouchCancel);
     window.addEventListener("scroll", resetWhenLeavingGallery, { passive: true });
     window.addEventListener("gallery:reset", resetGallery);
     gallery.addEventListener("click", savePositionBeforeOpeningArtwork, true);
@@ -413,7 +423,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       gallery.removeEventListener("touchstart", handleTouchStart);
       gallery.removeEventListener("touchmove", handleTouchMove);
       gallery.removeEventListener("touchend", handleTouchEnd);
-      gallery.removeEventListener("touchcancel", handleTouchEnd);
+      gallery.removeEventListener("touchcancel", handleTouchCancel);
       window.removeEventListener("scroll", resetWhenLeavingGallery);
       window.removeEventListener("gallery:reset", resetGallery);
       gallery.removeEventListener("click", savePositionBeforeOpeningArtwork, true);

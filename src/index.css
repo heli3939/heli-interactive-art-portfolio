@@ -29,6 +29,8 @@ body {
 :where(.about-page, .detail-page, .process-page, .puzzle-page) {
   position: relative;
   isolation: isolate;
+  min-height: 100svh;
+  overflow-x: clip;
   background-color: #c6bdff;
   background-image: var(
     --page-background,

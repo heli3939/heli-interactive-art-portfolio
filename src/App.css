@@ -1,9 +1,7 @@
 .about-page {
   --home-header-height: 105px;
 
-  min-height: 100svh;
   padding-top: var(--home-header-height);
-  overflow-x: hidden;
 }
 
 /* Desktop header */
@@ -562,7 +560,6 @@ a.artwork-card:focus-visible .artwork-card__frame {
   .about-page {
     --home-header-height: 64px;
 
-    min-height: 852px;
     padding-top: var(--home-header-height);
   }
 
