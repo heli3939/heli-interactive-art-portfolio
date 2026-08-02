@@ -175,8 +175,11 @@ function ContactLinks({ mobile = false }) {
 
 function FloatingGallery({ disabled = false, entryMode = "default" }) {
   const galleryRef = useRef(null);
+  const disabledRef = useRef(disabled);
   const [isInstructionVisible, setIsInstructionVisible] = useState(true);
   const [hasMoreArtworks, setHasMoreArtworks] = useState(true);
+
+  disabledRef.current = disabled;
 
   useEffect(() => {
     const gallery = galleryRef.current;
@@ -270,7 +273,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
     };
 
     const handleWheel = (event) => {
-      if (disabled || reducedMotion) return;
+      if (disabledRef.current || reducedMotion) return;
 
       const bounds = gallery.getBoundingClientRect();
       const headerHeight = document.querySelector(".site-header--home")?.offsetHeight ?? 0;
@@ -302,7 +305,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
     };
 
     const handleTouchStart = (event) => {
-      if (disabled || event.touches.length !== 1) return;
+      if (disabledRef.current || event.touches.length !== 1) return;
       if (!touchMode) {
         touchMode = true;
         gallery.classList.add("gallery--touch-carousel");
@@ -318,7 +321,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
 
     const handleTouchMove = (event) => {
       if (
-        disabled
+        disabledRef.current
         || touchStartY === null
         || event.touches.length !== 1
       ) return;
@@ -436,7 +439,7 @@ function FloatingGallery({ disabled = false, entryMode = "default" }) {
       });
       if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame);
     };
-  }, [disabled, entryMode]);
+  }, [entryMode]);
 
   return (
     <section
